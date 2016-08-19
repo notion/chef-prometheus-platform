@@ -1,0 +1,13 @@
+{
+  "id": "prometheus-platform-kitchen-1.kitchen",
+  "run_list": [
+    "role[prometheus-platform-kitchen]",
+    "role[master-prometheus-platform-kitchen]"
+  ],
+  "automatic": {
+    "fqdn": "prometheus-platform-kitchen-1.kitchen",
+    "roles": [
+      "master-prometheus-platform-kitchen"
+    ]
+  }
+}

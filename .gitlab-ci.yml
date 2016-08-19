@@ -1,0 +1,41 @@
+# Template chef 20160615
+image: sbernard/arch-kitchen-docker
+
+foodcritic:
+  script:
+    - foodcritic .
+
+rubocop:
+  script:
+    - rubocop
+
+lines_length:
+  allow_failure: true
+  script:
+    - >
+      curl -s https://gitlab.com/s4m/checks/raw/master/check_lines_length.sh |
+      bash
+
+git_history:
+  script:
+    - >
+      curl -s https://gitlab.com/s4m/checks/raw/master/check_git_history.sh |
+      bash
+
+kitchen:
+  tags:
+    - docker
+  script:
+    - >
+      set +o pipefail;
+      containers=$(kitchen diagnose | grep container_name | awk '{print $2}');
+      for container in $containers; do
+        docker rm --force $container 2> /dev/null | true
+      done
+    - rm -rf .kitchen
+    - >
+      images=$(kitchen diagnose | grep image | cut -d':' -f2);
+      for image in $images; do
+        docker pull $image
+      done
+    - kitchen test -c -d always
