@@ -25,7 +25,7 @@ if node.run_state['prometheus-platform']['master']
     node.run_state['prometheus-platform']['nodes_exported']
 
   prometheus_config['scrape_configs'] =
-      ['job_name' => 'prometheus_node_exporter',
+      ['job_name' => 'node',
        'scrape_interval' => '5s',
        'static_configs' => ['targets' => nodes_exported]]
 
