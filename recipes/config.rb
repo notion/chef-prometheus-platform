@@ -24,12 +24,10 @@ if node.run_state['prometheus-platform']['master']
   nodes_exported =
     node.run_state['prometheus-platform']['nodes_exported']
 
-  prometheus_config = {
-    'scrape_configs' =>
+  prometheus_config['scrape_configs'] =
       ['job_name' => 'prometheus_node_exporter',
        'scrape_interval' => '5s',
        'static_configs' => ['targets' => nodes_exported]]
-  }
 
   template "#{prometheus_home}/#{prometheus_config_filename}" do
     source 'config.yml.erb'
