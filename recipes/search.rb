@@ -21,14 +21,12 @@ node.run_state['prometheus-platform'] = {}
 
 # Looking for the master
 master = cluster_search(node['prometheus-platform']['master'])
-return if master.nil? # Master not found
 
 node.run_state['prometheus-platform']['master'] =
   master['hosts'].include? node['fqdn'] if master
 
 # Looking for nodes to scrap
 nodes = cluster_search(node['prometheus-platform']['node'])
-return if nodes.nil? # Not enough nodes
 
 node.run_state['prometheus-platform']['node'] =
   nodes['hosts'].include? node['fqdn'] if nodes
