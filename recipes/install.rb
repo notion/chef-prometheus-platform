@@ -112,8 +112,8 @@ if node.run_state['prometheus-platform']['node']
   ].uniq.each do |dir_path|
     directory "prometheus-platform:#{dir_path}" do
       path dir_path
-      owner user
-      group group
+      owner 'root'
+      group 'root'
       mode '0755'
       recursive true
       action :create
