@@ -32,4 +32,4 @@ node.run_state['prometheus-platform']['node'] =
   nodes['hosts'].include? node['fqdn'] if nodes
 
 node.run_state['prometheus-platform']['nodes_exported'] =
-  nodes['hosts'].map { |host| "#{host}:9100" }
+  nodes['hosts'].map { |host| "#{host}:9100" } if nodes
