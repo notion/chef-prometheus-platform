@@ -53,6 +53,9 @@ suites:
       - role[<%= name %>-kitchen]
     attributes:
       prometheus-platform:
+        master:
+          role: master-prometheus-platform-kitchen
+          size: 1
         node:
           role: node-prometheus-platform-kitchen
           size: 2
