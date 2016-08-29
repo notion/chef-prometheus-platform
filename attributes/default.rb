@@ -79,6 +79,9 @@ default['prometheus-platform']['config_filename'] = 'prometheus.yml'
 default['prometheus-platform']['bin'] =
   "#{node['prometheus-platform']['prefix_home']}/prometheus/prometheus"
 
+# Should we restart service after config update?
+default['prometheus-platform']['auto_restart'] = true
+
 # Prometheus config
 default['prometheus-platform']['config'] = {
   'global' => {

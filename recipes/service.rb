@@ -14,6 +14,19 @@
 # limitations under the License.
 #
 
+auto_restart = node['prometheus-platform']['auto_restart']
+prefix_home = node['prometheus-platform']['prefix_home']
+prometheus_config_filename = node['prometheus-platform']['config_filename']
+
+if node['prometheus-platform']['auto_restart']
+  config_files = [
+    "#{prefix_home}/prometheus/#{prometheus_config_filename}"
+  ].map do |path|
+    "template[#{path}]"
+  end
+else config_files = []
+end
+
 systemd_unit 'prometheus_server.service' do
   enabled true
   active true
@@ -22,6 +35,7 @@ systemd_unit 'prometheus_server.service' do
   content node[cookbook_name]['prometheus_server']['unit']
   triggers_reload true
   action [:create, :enable, :start]
+  subscribes :restart, config_files if auto_restart
   only_if { node.run_state['prometheus-platform']['master'] }
 end
 
