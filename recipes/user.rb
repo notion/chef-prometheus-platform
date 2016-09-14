@@ -25,5 +25,5 @@ user node['prometheus-platform']['user'] do
   comment 'prometheus service account'
   group node['prometheus-platform']['group']
   system true
-  shell '/bin/nologin'
+  shell '/sbin/nologin'
 end
