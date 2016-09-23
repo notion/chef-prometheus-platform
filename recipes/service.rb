@@ -36,18 +36,7 @@ systemd_unit 'prometheus_server.service' do
   triggers_reload true
   action [:create, :enable, :start]
   subscribes :restart, config_files if auto_restart
-  only_if { node.run_state['prometheus-platform']['master'] }
-end
-
-systemd_unit 'prometheus_node.service' do
-  enabled true
-  active true
-  masked false
-  static false
-  content node[cookbook_name]['prometheus_node']['unit']
-  triggers_reload true
-  action [:create, :enable, :start]
-  only_if { node.run_state['prometheus-platform']['node'] }
+  only_if { node['prometheus-platform']['master_host'] == node['fqdn'] }
 end
 
 # Start alertmanager only if config has been done

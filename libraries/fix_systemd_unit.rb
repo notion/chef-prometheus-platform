@@ -14,9 +14,13 @@
 # limitations under the License.
 #
 
-include_recipe "#{cookbook_name}::user"
-include_recipe "#{cookbook_name}::install"
-include_recipe "#{cookbook_name}::node_exporter"
-include_recipe "#{cookbook_name}::jmx_exporter"
-include_recipe "#{cookbook_name}::config"
-include_recipe "#{cookbook_name}::service"
+class Chef
+  class Provider
+    # Monkey-patch of SystemdUnit to deactivate broken verification
+    class SystemdUnit < Chef::Provider
+      def systemd_analyze_path
+        nil
+      end
+    end
+  end
+end

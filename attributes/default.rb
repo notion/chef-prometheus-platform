@@ -34,6 +34,9 @@ server_package_name = "prometheus-#{prometheus_version}.linux-amd64.tar.gz"
 default['prometheus-platform']['server_mirror'] =
   "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
 
+# Prometheus server host
+default['prometheus-platform']['server_host'] = 'localhost'
+
 # Prometheus alert manager
 default['prometheus-platform']['master']['has_alertmanager'] = true
 default['prometheus-platform']['master']['alertmanager_path'] =
@@ -46,21 +49,6 @@ default['prometheus-platform']['master']['alertmanager_rev'] = 'release-0.3'
 # Prometheus alertmanager config filename to load (generated through template)
 default['prometheus-platform']['master']['alertmanager']['config_filename'] =
   'alertmanager.yml'
-
-# Prometheus node exporter
-default['prometheus-platform']['node_version'] = '0.12.0'
-prometheus_node_version = node['prometheus-platform']['node_version']
-
-# Where to get the tarball for prometheus node exporter
-default['prometheus-platform']['node_mirror_base'] =
-  'https://github.com/prometheus/node_exporter/releases/download/'
-node.default['prometheus-platform']['node_checksum'] =
-  'd48de5b89dac04aca751177afaa9b0919e5b3d389364d40160babc00d63aac7b'
-prometheus_mirror = node['prometheus-platform']['node_mirror_base']
-node_package_name =
-  "node_exporter-#{prometheus_node_version}.linux-amd64.tar.gz"
-default['prometheus-platform']['node_mirror'] =
-  "#{prometheus_mirror}/#{prometheus_node_version}/#{node_package_name}"
 
 # User and group of prometheus process
 default['prometheus-platform']['user'] = 'prometheus'
@@ -79,6 +67,10 @@ default['prometheus-platform']['config_filename'] = 'prometheus.yml'
 default['prometheus-platform']['bin'] =
   "#{node['prometheus-platform']['prefix_home']}/prometheus/prometheus"
 
+# Configure retries for the package resources, default = global default (0)
+# (mostly used for test purpose
+default['prometheus-platform']['package_retries'] = nil
+
 # Should we restart service after config update?
 default['prometheus-platform']['auto_restart'] = true
 
@@ -96,6 +88,11 @@ default['prometheus-platform']['config'] = {
      'scrape_interval' => '5s',
      'static_configs' => ['targets' => ['localhost:9090', 'localhost:9100']]]
 }
+
+# Initialize run_state attribute
+node.run_state['prometheus-platform'] = {}
+node.run_state['prometheus-platform']['config'] =
+  node['prometheus-platform']['config'].to_hash
 
 # Prometheus rules directory
 default['prometheus-platform']['rules_dir'] =

@@ -18,9 +18,11 @@ user = node['prometheus-platform']['user']
 group = node['prometheus-platform']['group']
 
 # tar may not be installed by default
-package 'tar'
+package 'tar' do
+  retries node['prometheus-platform']['package_retries']
+end
 
-if node.run_state['prometheus-platform']['master']
+if node['prometheus-platform']['master_host'] == node['fqdn']
   # Create prefix directories
   [
     node['prometheus-platform']['prefix_root'],
@@ -53,7 +55,9 @@ if node.run_state['prometheus-platform']['master']
   # Prometheus alertmanager
   if node['prometheus-platform']['master']['has_alertmanager']
     %w(make git golang-bin glibc-static).each do |pkg|
-      package pkg
+      package pkg do
+        retries node['prometheus-platform']['package_retries']
+      end
     end
     alertmanager_path =
       node['prometheus-platform']['master']['alertmanager_path']
@@ -100,35 +104,5 @@ if node.run_state['prometheus-platform']['master']
     link "#{alertmanager_path}/bin/alertmanager" do
       to alertmanager_bin
     end
-  end
-end
-
-# Prometheus node exporter
-if node.run_state['prometheus-platform']['node']
-  [
-    node['prometheus-platform']['prefix_root'],
-    node['prometheus-platform']['prefix_home'],
-    node['prometheus-platform']['prefix_bin']
-  ].uniq.each do |dir_path|
-    directory "prometheus-platform:#{dir_path}" do
-      path dir_path
-      owner 'root'
-      group 'root'
-      mode '0755'
-      recursive true
-      action :create
-    end
-  end
-
-  ark 'prometheus_node' do
-    action :install
-    url node['prometheus-platform']['node_mirror']
-    prefix_root node['prometheus-platform']['prefix_root']
-    prefix_home node['prometheus-platform']['prefix_home']
-    prefix_bin node['prometheus-platform']['prefix_bin']
-    has_binaries []
-    checksum node['prometheus-platform']['node_checksum']
-    version node['prometheus-platform']['node_version']
-    owner user
   end
 end

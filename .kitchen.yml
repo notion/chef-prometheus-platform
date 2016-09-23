@@ -50,14 +50,27 @@ suites:
       hostname: <%= name %>-kitchen-<%= i %>.kitchen
       container_name: <%= name %>-kitchen-<%= i %>
     run_list:
-      - role[<%= name %>-kitchen]
+      - recipe[prometheus-platform]
     attributes:
       prometheus-platform:
-        master:
-          role: master-prometheus-platform-kitchen
-          size: 1
-        node:
-          role: node-prometheus-platform-kitchen
-          size: 2
+        package_retries: 1
+        master_host: prometheus-platform-kitchen-1.kitchen
+        exporter:
+          node:
+            targets:
+              - prometheus-platform-kitchen-1.kitchen
+              - prometheus-platform-kitchen-2.kitchen
+              - prometheus-platform-kitchen-3.kitchen
+          jmx:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen:5556
+            config:
+              - name: prometheus-platform-kitchen-2.kitchen
+                app: test
+                scrape_port: 5556
+                options:
+                  hostPort: prometheus-platform-kitchen-2.kitchen:5555
+                  rules:
+                    - pattern: ".*"
   <% end %>
 <% end %>

@@ -15,23 +15,14 @@
 #
 
 # Deploy config on master
-if node.run_state['prometheus-platform']['master']
-  # Generate prometheus config
+if node['prometheus-platform']['master_host'] == node['fqdn']
+
   prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus/"
   prometheus_config_filename = node['prometheus-platform']['config_filename']
-  prometheus_config = node['prometheus-platform']['config'].to_hash
-
-  nodes_exported =
-    node.run_state['prometheus-platform']['nodes_exported']
-
-  prometheus_config['scrape_configs'] =
-    ['job_name' => 'node',
-     'scrape_interval' => '5s',
-     'static_configs' => ['targets' => nodes_exported]]
 
   template "#{prometheus_home}/#{prometheus_config_filename}" do
     source 'config.yml.erb'
-    variables config: prometheus_config
+    variables config: node.run_state['prometheus-platform']['config']
     user node['prometheus-platform']['user']
     group node['prometheus-platform']['group']
     mode '0600'
