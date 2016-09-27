@@ -23,9 +23,11 @@
 # Systemd service units, include config
 # Master
 prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
+has_alertmanager = node['prometheus-platform']['has_alertmanager']
 prometheus_server_start_cmd =
   "#{node['prometheus-platform']['bin']} -config.file \
-    #{prometheus_home}/#{node['prometheus-platform']['config_filename']}"
+    #{prometheus_home}/#{node['prometheus-platform']['config_filename']} \
+    #{'-alertmanager.url=http://localhost:9093' if has_alertmanager}"
 
 default['prometheus-platform']['prometheus_server']['unit'] = {
   'Unit' => {
