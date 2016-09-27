@@ -55,6 +55,7 @@ suites:
       prometheus-platform:
         package_retries: 1
         master_host: prometheus-platform-kitchen-1.kitchen
+        grafana_host: prometheus-platform-kitchen-1.kitchen
         exporter:
           node:
             targets:
@@ -64,6 +65,7 @@ suites:
           jmx:
             targets:
               - prometheus-platform-kitchen-2.kitchen:5556
+              - prometheus-platform-kitchen-3.kitchen:5556
             config:
               - name: prometheus-platform-kitchen-2.kitchen
                 app: test
