@@ -17,7 +17,9 @@
 if node['prometheus-platform']['grafana_host'] == node['fqdn']
 
   %w(initscripts fontconfig).each do |pkg|
-    package pkg
+    package pkg do
+      retries node['prometheus-platform']['package_retries']
+    end
   end
 
   rpm_package 'grafana' do
