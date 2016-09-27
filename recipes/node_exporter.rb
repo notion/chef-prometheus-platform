@@ -39,7 +39,7 @@ node_exporter['targets'].each do |target|
     node['prometheus-platform']['prefix_home'],
     node['prometheus-platform']['prefix_bin']
   ].uniq.each do |dir_path|
-    directory "prometheus-platform:#{dir_path}" do
+    directory "prometheus-platform-node:#{dir_path}" do
       path dir_path
       owner 'root'
       group 'root'
