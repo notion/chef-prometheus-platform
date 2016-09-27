@@ -14,10 +14,26 @@
 # limitations under the License.
 #
 
-include_recipe "#{cookbook_name}::user"
-include_recipe "#{cookbook_name}::install"
-include_recipe "#{cookbook_name}::node_exporter"
-include_recipe "#{cookbook_name}::jmx_exporter"
-include_recipe "#{cookbook_name}::grafana"
-include_recipe "#{cookbook_name}::config"
-include_recipe "#{cookbook_name}::service"
+if node['prometheus-platform']['grafana_host'] == node['fqdn']
+
+  %w(initscripts fontconfig).each do |pkg|
+    package pkg
+  end
+
+  rpm_package 'grafana' do
+    source node['prometheus-platform']['grafana']['package']
+  end
+
+  config = node['prometheus-platform']['grafana']['config']
+  template '/etc/grafana/grafana.ini' do
+    source 'config.ini.erb'
+    variables config: node['prometheus-platform']['grafana']['config']
+    group 'grafana'
+    mode '0640'
+    only_if { config.nil? || config.empty? }
+  end
+
+  service 'grafana-server' do
+    action [:enable, :start]
+  end
+end
