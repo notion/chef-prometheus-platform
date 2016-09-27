@@ -19,9 +19,9 @@ prefix_home = node['prometheus-platform']['prefix_home']
 prometheus_config_filename = node['prometheus-platform']['config_filename']
 
 alertmanager_home =
-  node['prometheus-platform']['master']['alertmanager_path']
+  node['prometheus-platform']['alertmanager_path']
 alertmanager_config_filename =
-  node['prometheus-platform']['master']['alertmanager']['config_filename']
+  node['prometheus-platform']['alertmanager']['config_filename']
 
 config_files = [
   "#{prefix_home}/prometheus/#{prometheus_config_filename}",
@@ -43,7 +43,7 @@ systemd_unit 'prometheus_server.service' do
 end
 
 # Start alertmanager only if config has been done
-unless node['prometheus-platform']['master']['alertmanager']['config'].empty?
+unless node['prometheus-platform']['alertmanager']['config'].empty?
   systemd_unit 'prometheus_alertmanager.service' do
     enabled true
     active true
@@ -53,6 +53,6 @@ unless node['prometheus-platform']['master']['alertmanager']['config'].empty?
     triggers_reload true
     action [:create, :enable, :start]
     subscribes :restart, config_files if auto_restart
-    only_if { node['prometheus-platform']['master']['has_alertmanager'] }
+    only_if { node['prometheus-platform']['has_alertmanager'] }
   end
 end

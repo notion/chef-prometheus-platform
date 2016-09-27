@@ -43,7 +43,7 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
     )[data_bag['key']]
 
     rules_dir = node['prometheus-platform']['rules_dir']
-    file "#{rules_dir}/#{data_bag['item']}.rule" do
+    file "#{rules_dir}/#{data_bag['item']}.rules" do
       user node['prometheus-platform']['user']
       group node['prometheus-platform']['group']
       mode '0600'
@@ -52,13 +52,13 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
   end
 
   # Generate alertmanager config
-  if node['prometheus-platform']['master']['has_alertmanager']
+  if node['prometheus-platform']['has_alertmanager']
     alertmanager_home =
-      node['prometheus-platform']['master']['alertmanager_path']
+      node['prometheus-platform']['alertmanager_path']
     alertmanager_config_filename =
-      node['prometheus-platform']['master']['alertmanager']['config_filename']
+      node['prometheus-platform']['alertmanager']['config_filename']
     alertmanager_config =
-      node['prometheus-platform']['master']['alertmanager']['config'].to_hash
+      node['prometheus-platform']['alertmanager']['config'].to_hash
     template "#{alertmanager_home}/#{alertmanager_config_filename}" do
       source 'config.yml.erb'
       variables config: alertmanager_config

@@ -53,14 +53,14 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
   end
 
   # Prometheus alertmanager
-  if node['prometheus-platform']['master']['has_alertmanager']
+  if node['prometheus-platform']['has_alertmanager']
     %w(make git golang-bin glibc-static).each do |pkg|
       package pkg do
         retries node['prometheus-platform']['package_retries']
       end
     end
     alertmanager_path =
-      node['prometheus-platform']['master']['alertmanager_path']
+      node['prometheus-platform']['alertmanager_path']
 
     alertmanager_repo_path =
       "#{alertmanager_path}/src/github.com/prometheus/alertmanager"
@@ -75,8 +75,8 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
     end
 
     git "#{alertmanager_path}/src/github.com/prometheus/alertmanager" do
-      repository node['prometheus-platform']['master']['alertmanager_source']
-      revision node['prometheus-platform']['master']['alertmanager_rev']
+      repository node['prometheus-platform']['alertmanager_source']
+      revision node['prometheus-platform']['alertmanager_rev']
       user user
       group group
       action :checkout

@@ -73,9 +73,9 @@ default['prometheus-platform']['prometheus_node']['unit'] = {
 
 # Alertmanager
 prometheus_alertmanager_home =
-  node['prometheus-platform']['master']['alertmanager_path']
+  node['prometheus-platform']['alertmanager_path']
 alertmanager_config_file =
-  node['prometheus-platform']['master']['alertmanager']['config_filename']
+  node['prometheus-platform']['alertmanager']['config_filename']
 prometheus_alertmanager_start_cmd =
   "#{prometheus_alertmanager_home}/bin/alertmanager \
   -config.file=#{prometheus_alertmanager_home}/#{alertmanager_config_file}"

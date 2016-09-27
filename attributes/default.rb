@@ -38,16 +38,16 @@ default['prometheus-platform']['server_mirror'] =
 default['prometheus-platform']['server_host'] = 'localhost'
 
 # Prometheus alert manager
-default['prometheus-platform']['master']['has_alertmanager'] = true
-default['prometheus-platform']['master']['alertmanager_path'] =
+default['prometheus-platform']['has_alertmanager'] = true
+default['prometheus-platform']['alertmanager_path'] =
   '/opt/alertmanager'
 
-default['prometheus-platform']['master']['alertmanager_source'] =
+default['prometheus-platform']['alertmanager_source'] =
   'https://github.com/prometheus/alertmanager.git'
-default['prometheus-platform']['master']['alertmanager_rev'] = 'release-0.3'
+default['prometheus-platform']['alertmanager_rev'] = 'release-0.3'
 
 # Prometheus alertmanager config filename to load (generated through template)
-default['prometheus-platform']['master']['alertmanager']['config_filename'] =
+default['prometheus-platform']['alertmanager']['config_filename'] =
   'alertmanager.yml'
 
 # User and group of prometheus process
@@ -107,4 +107,4 @@ default['prometheus-platform']['auto_restart'] = true
 
 # Alertmanager config
 # Alertmanager will not be started if his config is empty
-default['prometheus-platform']['master']['alertmanager']['config'] = {}
+default['prometheus-platform']['alertmanager']['config'] = {}
