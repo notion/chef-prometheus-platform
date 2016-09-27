@@ -14,5 +14,18 @@
 # limitations under the License.
 #
 
-require 'master'
-require 'grafana'
+require 'spec_helper'
+
+describe 'Grafana' do
+  it 'is running' do
+    expect(service('grafana-server')).to be_running
+  end
+
+  it 'is launched at boot' do
+    expect(service('grafana-server')).to be_enabled
+  end
+
+  it 'is listening on correct port' do
+    expect(port(3000)).to be_listening
+  end
+end
