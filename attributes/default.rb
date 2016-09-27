@@ -71,9 +71,6 @@ default['prometheus-platform']['bin'] =
 # (mostly used for test purpose
 default['prometheus-platform']['package_retries'] = nil
 
-# Should we restart service after config update?
-default['prometheus-platform']['auto_restart'] = true
-
 # Prometheus config
 default['prometheus-platform']['config'] = {
   'global' => {
@@ -104,6 +101,9 @@ default['prometheus-platform']['data_bag']['name'] = nil
 default['prometheus-platform']['data_bag']['item'] = nil
 # Key used to load the value in data bag item containing the data
 default['prometheus-platform']['data_bag']['key'] = nil
+
+# Should we restart service after config update?
+default['prometheus-platform']['auto_restart'] = true
 
 # Alertmanager config
 # Alertmanager will not be started if his config is empty

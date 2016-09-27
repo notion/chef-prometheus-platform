@@ -17,7 +17,7 @@
 # Deploy config on master
 if node['prometheus-platform']['master_host'] == node['fqdn']
 
-  prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus/"
+  prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
   prometheus_config_filename = node['prometheus-platform']['config_filename']
 
   template "#{prometheus_home}/#{prometheus_config_filename}" do

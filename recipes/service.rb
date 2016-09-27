@@ -18,13 +18,10 @@ auto_restart = node['prometheus-platform']['auto_restart']
 prefix_home = node['prometheus-platform']['prefix_home']
 prometheus_config_filename = node['prometheus-platform']['config_filename']
 
-if node['prometheus-platform']['auto_restart']
-  config_files = [
-    "#{prefix_home}/prometheus/#{prometheus_config_filename}"
-  ].map do |path|
-    "template[#{path}]"
-  end
-else config_files = []
+config_files = [
+  "#{prefix_home}/prometheus/#{prometheus_config_filename}"
+].map do |path|
+  "template[#{path}]"
 end
 
 systemd_unit 'prometheus_server.service' do
