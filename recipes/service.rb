@@ -18,8 +18,14 @@ auto_restart = node['prometheus-platform']['auto_restart']
 prefix_home = node['prometheus-platform']['prefix_home']
 prometheus_config_filename = node['prometheus-platform']['config_filename']
 
+alertmanager_home =
+  node['prometheus-platform']['master']['alertmanager_path']
+alertmanager_config_filename =
+  node['prometheus-platform']['master']['alertmanager']['config_filename']
+
 config_files = [
-  "#{prefix_home}/prometheus/#{prometheus_config_filename}"
+  "#{prefix_home}/prometheus/#{prometheus_config_filename}",
+  "#{alertmanager_home}/#{alertmanager_config_filename}"
 ].map do |path|
   "template[#{path}]"
 end
@@ -46,6 +52,7 @@ unless node['prometheus-platform']['master']['alertmanager']['config'].empty?
     content node[cookbook_name]['prometheus_alertmanager']['unit']
     triggers_reload true
     action [:create, :enable, :start]
+    subscribes :restart, config_files if auto_restart
     only_if { node['prometheus-platform']['master']['has_alertmanager'] }
   end
 end
