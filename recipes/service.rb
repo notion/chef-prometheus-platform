@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+iam_server = node['prometheus-platform']['master_host'] == node['fqdn']
 auto_restart = node['prometheus-platform']['auto_restart']
 prefix_home = node['prometheus-platform']['prefix_home']
 prometheus_config_filename = node['prometheus-platform']['config_filename']
@@ -39,7 +40,7 @@ systemd_unit 'prometheus_server.service' do
   triggers_reload true
   action [:create, :enable, :start]
   subscribes :restart, config_files if auto_restart
-  only_if { node['prometheus-platform']['master_host'] == node['fqdn'] }
+  only_if { iam_server }
 end
 
 # Start alertmanager only if config has been done
@@ -53,6 +54,6 @@ unless node['prometheus-platform']['alertmanager']['config'].empty?
     triggers_reload true
     action [:create, :enable, :start]
     subscribes :restart, config_files if auto_restart
-    only_if { node['prometheus-platform']['has_alertmanager'] }
+    only_if { node['prometheus-platform']['has_alertmanager'] && iam_server }
   end
 end

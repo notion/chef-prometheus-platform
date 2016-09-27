@@ -22,7 +22,9 @@ package 'tar' do
   retries node['prometheus-platform']['package_retries']
 end
 
-if node['prometheus-platform']['master_host'] == node['fqdn']
+iam_server = node['prometheus-platform']['master_host'] == node['fqdn']
+
+if iam_server
   # Create prefix directories
   [
     node['prometheus-platform']['prefix_root'],
@@ -53,7 +55,7 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
   end
 
   # Prometheus alertmanager
-  if node['prometheus-platform']['has_alertmanager']
+  if node['prometheus-platform']['has_alertmanager'] && iam_server
     %w(make git golang-bin glibc-static).each do |pkg|
       package pkg do
         retries node['prometheus-platform']['package_retries']

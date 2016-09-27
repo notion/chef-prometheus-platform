@@ -37,7 +37,7 @@ default['prometheus-platform']['server_mirror'] =
 # Prometheus server host
 default['prometheus-platform']['server_host'] = 'localhost'
 
-# Prometheus alert manager
+# Prometheus alert manager (will be installed on prometheus server)
 default['prometheus-platform']['has_alertmanager'] = true
 default['prometheus-platform']['alertmanager_path'] =
   '/opt/alertmanager'
