@@ -34,7 +34,7 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
     group node['prometheus-platform']['group']
   end
 
-  # Deploy alerting  and recording rules from data_bag
+  # Deploy alerting and recording rules from data_bag
   data_bag = node['prometheus-platform']['data_bag']
   unless data_bag['name'].nil?
     content = data_bag_item(
