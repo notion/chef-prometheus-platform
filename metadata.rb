@@ -8,6 +8,5 @@ source_url 'https://gitlab.com/s4m-chef-repositories/prometheus-platform'
 issues_url 'https://gitlab.com/s4m-chef-repositories/prometheus-plaform'
 version '1.0.0'
 
-depends 'cluster-search'
 depends 'ark'
 supports 'centos', '>= 7.1'
