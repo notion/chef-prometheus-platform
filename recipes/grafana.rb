@@ -22,7 +22,8 @@ if node['prometheus-platform']['grafana_host'] == node['fqdn']
     end
   end
 
-  rpm_package 'grafana' do
+  package 'grafana' do
+    provider Chef::Provider::Package::Rpm
     source node['prometheus-platform']['grafana']['package']
   end
 
