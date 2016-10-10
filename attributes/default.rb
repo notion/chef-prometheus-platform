@@ -86,6 +86,9 @@ default['prometheus-platform']['config'] = {
      'static_configs' => ['targets' => ['localhost:9090', 'localhost:9100']]]
 }
 
+# Prometheus storage retention (default to 2 weeks)
+default['prometheus-platform']['storage_retention'] = '21600h'
+
 # Initialize run_state attribute
 node.run_state['prometheus-platform'] = {}
 node.run_state['prometheus-platform']['config'] =

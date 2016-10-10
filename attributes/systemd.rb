@@ -24,10 +24,15 @@
 # Master
 prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
 has_alertmanager = node['prometheus-platform']['has_alertmanager']
-prometheus_server_start_cmd =
+storage_retention = node['prometheus-platform']['storage_retention']
+
+default['prometheus-platform']['prometheus_server']['start_cmd'] =
   "#{node['prometheus-platform']['bin']} -config.file \
     #{prometheus_home}/#{node['prometheus-platform']['config_filename']} \
-    #{'-alertmanager.url=http://localhost:9093' if has_alertmanager}"
+    #{'-alertmanager.url=http://localhost:9093' if has_alertmanager} \
+    #{"-storage.local.retention=#{storage_retention}" if storage_retention}"
+
+start_cmd = node['prometheus-platform']['prometheus_server']['start_cmd']
 
 default['prometheus-platform']['prometheus_server']['unit'] = {
   'Unit' => {
@@ -42,7 +47,7 @@ default['prometheus-platform']['prometheus_server']['unit'] = {
     'LimitNOFILE' => 655_36,
     'SyslogIdentifier' => 'prometheus-server',
     'Restart' => 'on-failure',
-    'ExecStart' => prometheus_server_start_cmd
+    'ExecStart' => start_cmd
   },
   'Install' => {
     'WantedBy' => 'multi-user.target'
