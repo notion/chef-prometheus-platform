@@ -43,11 +43,13 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
     )[data_bag['key']]
 
     rules_dir = node['prometheus-platform']['rules_dir']
-    file "#{rules_dir}/#{data_bag['item']}.rules" do
+    template "#{rules_dir}/#{data_bag['item']}.rules" do
+      source 'rules.erb'
       user node['prometheus-platform']['user']
       group node['prometheus-platform']['group']
       mode '0600'
-      content content
+      variables content: content
+      notifies :restart, 'systemd_unit[prometheus_server.service]', :immediately
     end
   end
 
