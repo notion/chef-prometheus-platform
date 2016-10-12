@@ -56,6 +56,7 @@ if iam_server
 
   # Prometheus alertmanager
   if node['prometheus-platform']['has_alertmanager'] && iam_server
+    # Install dependencies
     %w(make git golang-bin glibc-static).each do |pkg|
       package pkg do
         retries node['prometheus-platform']['package_retries']
@@ -69,6 +70,7 @@ if iam_server
     alertmanager_bin =
       "#{alertmanager_repo_path}/alertmanager"
 
+    # Create directory for alertmanager source
     directory "#{alertmanager_path}/src/github.com/prometheus/alertmanager" do
       owner user
       group group
@@ -76,6 +78,7 @@ if iam_server
       recursive true
     end
 
+    # Checkout alertmanager source
     git "#{alertmanager_path}/src/github.com/prometheus/alertmanager" do
       repository node['prometheus-platform']['alertmanager_source']
       revision node['prometheus-platform']['alertmanager_rev']
@@ -92,6 +95,7 @@ if iam_server
       creates 'alertmanager'
     end
 
+    # Build alertmanager binary using go
     execute 'build alertmanager' do
       command <<-EOF
         export GOPATH=#{alertmanager_path}

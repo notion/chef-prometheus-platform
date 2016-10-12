@@ -49,6 +49,7 @@ node_exporter['targets'].each do |target|
     end
   end
 
+  # Install prometheus_node exporter
   ark 'prometheus_node' do
     action :install
     url node['prometheus-platform']['node_mirror']
@@ -62,6 +63,7 @@ node_exporter['targets'].each do |target|
     group node['prometheus-platform']['group']
   end
 
+  # Deploy systemd unit
   systemd_unit 'prometheus_node.service' do
     enabled true
     active true

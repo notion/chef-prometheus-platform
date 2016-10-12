@@ -16,17 +16,20 @@
 
 if node['prometheus-platform']['grafana_host'] == node['fqdn']
 
+  # Install dependencies
   %w(initscripts fontconfig).each do |pkg|
     package pkg do
       retries node['prometheus-platform']['package_retries']
     end
   end
 
+  # Install grafana with remote rpm file
   package 'grafana' do
     provider Chef::Provider::Package::Rpm
     source node['prometheus-platform']['grafana']['package']
   end
 
+  # Deploy grafana config
   config = node['prometheus-platform']['grafana']['config']
   template '/etc/grafana/grafana.ini' do
     source 'config.ini.erb'
@@ -36,6 +39,7 @@ if node['prometheus-platform']['grafana_host'] == node['fqdn']
     only_if { config.nil? || config.empty? }
   end
 
+  # Start grafana service
   service 'grafana-server' do
     action [:enable, :start]
   end

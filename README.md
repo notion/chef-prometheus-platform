@@ -1,13 +1,13 @@
 Prometheus Platform
 =============
 
-![alt tag](http://bit.ly/2b2UURS)
-
 Description
 -----------
 
 Open-source systems monitoring and alerting toolkit originally
 built at SoundCloud.
+
+This cookbook is designed to install and configure Prometheus.
 
 Requirements
 ------------
@@ -44,26 +44,8 @@ Recipes
 
 ### default
 
-Include `search`, `user`, `install` , `config`, `service`
-
-
-### search
-
-By default, the *search* recipe use a search to find master and nodes.
-The search is parametrized by a role name, defined in attribute
-`node['prometheus-platform']['master']` which default to
-*master-prometheus-platform*.
-Node having this role in their expanded runlist will be considered as master.
-Node having the *node-prometheus-plaform* role in their expanded runlist will
-be considered as a node and the node exporter will be installed on it.
-
-If you do not want to use search, it is possible to define
-`node['prometheus-platform']['hosts']` with an array containing the hostname of
-the node. In this case, *size* attribute is ignored
-and search deactivated.
-
-See [roles](test/integration/roles) for some examples and
-[Cluster Search][cluster-search] documentation for more information.
+Include `user`, `install`, `node_exporter` , `jmx_exporter`, `grafana`,
+`config` and `service` recipes.
 
 ### user
 
@@ -71,16 +53,48 @@ Create user/group used by Prometheus
 
 ### install
 
-Install Prometheus server, alertmanager and node exporter.
+Install Prometheus server and alertmanager.
+
+Prometheus server will be installed on the host defined in the following
+attribute:
+
+`node['prometheus-platform']['master_host']`
+
+Alertmanager will be installed on the same host of the prometheus server if
+the following attribute is set to true value:
+
+`node['prometheus-platform']['has_alertmanager']`
+
+### node_exporter
+
+Install and start prometheus node_exporter on node if node has been
+defined as a target in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate node exporter related config to deploy on
+prometheus server.
+
+### jmx_exporter
+
+Install and start prometheus jmx_exporter on node if node has been defined
+as a jmx target in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate jmx exporter related config to deploy on
+prometheus server.
+
+### grafana
+
+Install and start grafana on the host defined in the following attribute:
+
+`node['prometheus-platform']['grafana_host']`
 
 ### config
 
-Generate config for prometheus server, alertmanager and node exporter
+Generate and deploy global config and alertmanager config for prometheus
+server.
 
 ### service
 
-Deploy systemd unit files for prometheus server, alertmanager and
-node exporter.
+Deploy systemd units for prometheus_server and alertmanager.
 
 Resources/Providers
 -------------------

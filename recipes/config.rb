@@ -49,7 +49,8 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
       group node['prometheus-platform']['group']
       mode '0600'
       variables content: content
-      notifies :restart, 'systemd_unit[prometheus_server.service]', :immediately
+      notifies :restart, 'systemd_unit[prometheus_server.service]',
+               :immediately
     end
   end
 

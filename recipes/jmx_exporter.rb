@@ -89,7 +89,7 @@ unless targets_config.nil? || targets_config.empty?
         'WantedBy' => 'multi-user.target'
       }
     }
-
+    # Deploy systemd unit
     systemd_unit "jmx_exporter_#{target['name']}-#{target['app']}.service" do
       enabled true
       active true
