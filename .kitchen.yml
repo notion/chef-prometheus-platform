@@ -74,5 +74,9 @@ suites:
                   hostPort: prometheus-platform-kitchen-2.kitchen:5555
                   rules:
                     - pattern: ".*"
+          aerospike:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen
+
   <% end %>
 <% end %>
