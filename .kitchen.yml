@@ -77,6 +77,9 @@ suites:
           aerospike:
             targets:
               - prometheus-platform-kitchen-2.kitchen
+          zookeeper:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen
 
   <% end %>
 <% end %>
