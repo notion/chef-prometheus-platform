@@ -14,7 +14,19 @@
 # limitations under the License.
 #
 
-require 'node'
-require 'jmx_exporter'
-require 'aerospike_exporter'
-require 'zookeeper_exporter'
+require 'spec_helper'
+
+service_name = 'jmx_exporter_prometheus-platform-kitchen-2.kitchen-test'
+describe 'jmx exporter' do
+  it 'is running' do
+    expect(service(service_name)).to be_running
+  end
+
+  it 'is launched at boot' do
+    expect(service(service_name)).to be_enabled
+  end
+
+  it 'is listening on correct port' do
+    expect(port(5556)).to be_listening
+  end
+end

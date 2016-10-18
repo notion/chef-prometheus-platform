@@ -14,7 +14,19 @@
 # limitations under the License.
 #
 
-require 'node'
-require 'jmx_exporter'
-require 'aerospike_exporter'
-require 'zookeeper_exporter'
+require 'spec_helper'
+
+service_name = 'zookeeper_exporter'
+describe 'zookeeper exporter' do
+  it 'is running' do
+    expect(service(service_name)).to be_running
+  end
+
+  it 'is launched at boot' do
+    expect(service(service_name)).to be_enabled
+  end
+
+  it 'is listening on correct port' do
+    expect(port(9114)).to be_listening
+  end
+end
