@@ -80,6 +80,9 @@ suites:
           zookeeper:
             targets:
               - prometheus-platform-kitchen-2.kitchen
+          mysqld:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen
 
   <% end %>
 <% end %>

@@ -14,8 +14,11 @@
 # limitations under the License.
 #
 
-require 'node'
-require 'jmx_exporter'
-require 'aerospike_exporter'
-require 'zookeeper_exporter'
-require 'mysqld_exporter'
+require 'spec_helper'
+
+service_name = 'mysqld_exporter'
+describe 'mysqld exporter' do
+  it 'is launched at boot' do
+    expect(service(service_name)).to be_enabled
+  end
+end
