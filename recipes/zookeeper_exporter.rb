@@ -46,7 +46,8 @@ unless targets.nil? || targets.empty?
 
     # Install dependencies
     %w(make git golang-bin glibc-static).each do |pkg|
-      package pkg do
+      package "install #{pkg} for zookeeper exporter" do
+        package_name pkg
         retries node['prometheus-platform']['package_retries']
       end
     end
