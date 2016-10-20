@@ -43,7 +43,7 @@ platforms:
 
 suites:
 # Generate different types of nodes
-<% { 'prometheus-platform' => 3 }.each do |name,n| %>
+<% { 'prometheus-platform' => 2 }.each do |name,n| %>
   <% ("1".."#{n}").each do |i| %>
   - name: <%= name %>-<%= i %>
     driver:
@@ -65,7 +65,6 @@ suites:
           jmx:
             targets:
               - prometheus-platform-kitchen-2.kitchen:5556
-              - prometheus-platform-kitchen-3.kitchen:5556
             config:
               - name: prometheus-platform-kitchen-2.kitchen
                 app: test
@@ -76,13 +75,13 @@ suites:
                     - pattern: ".*"
           aerospike:
             targets:
-              - prometheus-platform-kitchen-2.kitchen
+              - prometheus-platform-kitchen-2.kitchen:9145
           zookeeper:
             targets:
-              - prometheus-platform-kitchen-2.kitchen
-          mysqld:
+              - prometheus-platform-kitchen-2.kitchen:9114
+          statsd:
             targets:
-              - prometheus-platform-kitchen-2.kitchen
+              - prometheus-platform-kitchen-2.kitchen:9102
 
   <% end %>
 <% end %>

@@ -14,14 +14,19 @@
 # limitations under the License.
 #
 
-include_recipe "#{cookbook_name}::user"
-include_recipe "#{cookbook_name}::install"
-include_recipe "#{cookbook_name}::node_exporter"
-include_recipe "#{cookbook_name}::jmx_exporter"
-include_recipe "#{cookbook_name}::aerospike_exporter"
-include_recipe "#{cookbook_name}::zookeeper_exporter"
-include_recipe "#{cookbook_name}::mysqld_exporter"
-include_recipe "#{cookbook_name}::statsd_exporter"
-include_recipe "#{cookbook_name}::grafana"
-include_recipe "#{cookbook_name}::config"
-include_recipe "#{cookbook_name}::service"
+require 'spec_helper'
+
+service_name = 'statsd_exporter'
+describe 'statsd exporter' do
+  it 'is running' do
+    expect(service(service_name)).to be_running
+  end
+
+  it 'is launched at boot' do
+    expect(service(service_name)).to be_enabled
+  end
+
+  it 'is listening on correct port' do
+    expect(port(9102)).to be_listening
+  end
+end
