@@ -81,6 +81,38 @@ as a jmx target in prometheus server (see .kitchen.yml for example).
 This recipe also generate jmx exporter related config to deploy on
 prometheus server.
 
+### aerospike_exporter
+
+Install and start prometheus aerospike_exporter on node if node has been defined
+as a target in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate aerospike exporter related config to deploy on
+prometheus server.
+
+### mysqld_exporter
+
+Install and start prometheus jmx_exporter on node if node has been defined
+as a target in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate mysqld exporter related config to deploy on
+prometheus server.
+
+### zookeeper_exporter
+
+Install and start prometheus zookeeper_exporter on node if node has been defined
+as atarget in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate zookeeper exporter related config to deploy on
+prometheus server.
+
+### statsd_exporter
+
+Install and start prometheus statsd_exporter on node if node has been defined
+as a target in prometheus server (see .kitchen.yml for example).
+
+This recipe also generate statsd exporter related config to deploy on
+prometheus server.
+
 ### grafana
 
 Install and start grafana on the host defined in the following attribute:
