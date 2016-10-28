@@ -50,7 +50,7 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
       mode '0600'
       variables content: content
       notifies :restart, 'systemd_unit[prometheus_server.service]',
-               :immediately
+               :delayed
     end
   end
 
