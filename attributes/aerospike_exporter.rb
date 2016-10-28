@@ -15,7 +15,8 @@
 #
 
 # Version of aerospike_exporter
-default['prometheus-platform']['exporter']['aerospike']['git_branch'] = 'master'
+default['prometheus-platform']['exporter']['aerospike']['git_branch'] =
+  'master'
 
 default['prometheus-platform']['exporter']['aerospike']['repo'] =
   'https://github.com/fphilippon/asprom.git'

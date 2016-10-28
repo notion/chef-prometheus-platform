@@ -31,7 +31,7 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
   end
 end
 
-# Install aerospike_exporter on node if defined as a target in prometheus server
+# Install aerospike_exporter on node if defined as a target in prometheus
 targets = aerospike_exporter['targets'].to_a
 
 unless targets.nil? || targets.empty?

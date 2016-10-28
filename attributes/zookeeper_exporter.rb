@@ -15,7 +15,8 @@
 #
 
 # Version of zookeeper_exporter
-default['prometheus-platform']['exporter']['zookeeper']['git_branch'] = 'master'
+default['prometheus-platform']['exporter']['zookeeper']['git_branch'] =
+  'master'
 
 default['prometheus-platform']['exporter']['zookeeper']['repo'] =
   'https://github.com/dln/zookeeper_exporter.git'

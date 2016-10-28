@@ -83,8 +83,8 @@ prometheus server.
 
 ### aerospike_exporter
 
-Install and start prometheus aerospike_exporter on node if node has been defined
-as a target in prometheus server (see .kitchen.yml for example).
+Install and start prometheus aerospike_exporter on node if node has been
+defined as a target in prometheus server (see .kitchen.yml for example).
 
 This recipe also generate aerospike exporter related config to deploy on
 prometheus server.
@@ -99,8 +99,8 @@ prometheus server.
 
 ### zookeeper_exporter
 
-Install and start prometheus zookeeper_exporter on node if node has been defined
-as atarget in prometheus server (see .kitchen.yml for example).
+Install and start prometheus zookeeper_exporter on node if node has been
+defined as a target in prometheus server (see .kitchen.yml for example).
 
 This recipe also generate zookeeper exporter related config to deploy on
 prometheus server.
