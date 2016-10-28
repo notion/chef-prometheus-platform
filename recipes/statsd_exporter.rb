@@ -35,7 +35,7 @@ end
 targets = statsd_exporter['targets'].to_a
 
 unless targets.nil? || targets.empty?
-  targets.each do |target|
+  targets.each do |target| # rubocop:disable Metrics/BlockLength
     not_target = !target.include?(node['fqdn'])
     next if not_target
 

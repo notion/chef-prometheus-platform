@@ -34,7 +34,7 @@ end
 # Install jmx_exporter on node if defined as a target in prometheus server
 targets_config = jmx_exporter['config']
 unless targets_config.nil? || targets_config.empty?
-  targets_config.each do |target|
+  targets_config.each do |target| # rubocop:disable Metrics/BlockLength
     next unless target['name'] == node['fqdn']
     # Java is needed by jmx_exporter
     java_package = jmx_exporter['java'][node['platform']]

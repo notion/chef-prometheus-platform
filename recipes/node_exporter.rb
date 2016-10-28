@@ -32,7 +32,7 @@ end
 
 # Install prometheus node_exporter on node if defined as a target in
 # prometheus server
-node_exporter['targets'].each do |target|
+node_exporter['targets'].each do |target| # rubocop:disable Metrics/BlockLength
   next unless target == node['fqdn']
   [
     node['prometheus-platform']['prefix_root'],
