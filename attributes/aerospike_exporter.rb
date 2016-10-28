@@ -19,7 +19,7 @@ default['prometheus-platform']['exporter']['aerospike']['git_branch'] =
   'master'
 
 default['prometheus-platform']['exporter']['aerospike']['repo'] =
-  'https://github.com/fphilippon/asprom.git'
+  'https://github.com/alicebob/asprom.git'
 
 # Directory where aerospike exporter is installed
 default['prometheus-platform']['exporter']['aerospike']['path'] =
