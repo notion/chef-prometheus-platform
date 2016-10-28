@@ -21,10 +21,10 @@
 # (because of chef-solo for example).
 
 # prometheus package
-default['prometheus-platform']['version'] = '1.0.1'
+default['prometheus-platform']['version'] = '1.2.1'
 prometheus_version = node['prometheus-platform']['version']
 default['prometheus-platform']['checksum'] =
-  '2ef4f7e416c6fdc07396be9a72f69670733a0c6f72060c8bb42d6ff3410eae96'
+  '77da9e852b4087d70fd6e04c3dc71b37127124a87ee6e66523b14bcbc28bd6ca'
 
 # Where to get the tarball for prometheus server
 default['prometheus-platform']['server_mirror_base'] =
