@@ -14,11 +14,14 @@
 # limitations under the License.
 #
 
-include_recipe "#{cookbook_name}::user"
-include_recipe "#{cookbook_name}::install"
-include_recipe "#{cookbook_name}::node_exporter"
-include_recipe "#{cookbook_name}::jmx_exporter"
-include_recipe "#{cookbook_name}::exporters"
-include_recipe "#{cookbook_name}::grafana"
-include_recipe "#{cookbook_name}::config"
-include_recipe "#{cookbook_name}::service"
+if node['prometheus-platform']['exporter']['install_config']
+  exporters =
+    node['prometheus-platform']['exporter']['install_config']
+  exporters.each do |name, conf|
+    resource = prometheus_platform_exporter name
+    conf.each do |key, value|
+      value = [value] unless value.is_a? Array
+      resource.send(key, *value)
+    end
+  end
+end

@@ -39,8 +39,10 @@ unless targets_config.nil? || targets_config.empty?
     # Java is needed by jmx_exporter
     java_package = jmx_exporter['java'][node['platform']]
     package java_package do
-      retries node['prometheus-platform']['package_retries']
-    end unless java_package.to_s.empty?
+      unless java_package.to_s.empty?
+        retries node['prometheus-platform']['package_retries']
+      end
+    end
 
     directory jmx_exporter['path'] do
       owner node['prometheus-platform']['user']

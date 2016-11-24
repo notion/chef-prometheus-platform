@@ -33,7 +33,6 @@ describe 'Prometheus' do
     its(:content) { should contain '# Produced by Chef' }
     its(:content) { should contain 'job_name: node' }
     its(:content) { should contain 'prometheus-platform-kitchen-2' }
-    its(:content) { should contain 'prometheus-platform-kitchen-3' }
   end
 
   it 'has started successfully' do
