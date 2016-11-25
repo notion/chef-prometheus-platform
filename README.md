@@ -26,7 +26,7 @@ Usage
 
 ### Test
 
-This cookbook is fully tested through the installation of 3 nodes
+This cookbook is fully tested through the installation of 2 nodes
 in docker hosts. This uses kitchen, docker and some monkey-patching.
 
 For more information, see *.kitchen.yml* and *test* directory.
@@ -35,7 +35,14 @@ Attributes
 ----------
 
 Configuration is done by overriding default attributes. All configuration keys
-have a default defined in [attributes/default.rb](attributes/default.rb).
+have a default defined in:
+
+[attributes/default.rb](attributes/default.rb).
+[attributes/grafana.rb](attributes/grafana.rb).
+[attributes/jmx\_exporter.rb](attributes/jmx_exporter.rb).
+[attributes/node\_exporter.rb](attributes/node_exporter.rb).
+[attributes/systemd.rb](attributes/systemd.rb).
+
 Please read it to have a comprehensive view of what and how you can configure
 this cookbook behavior.
 
@@ -44,8 +51,8 @@ Recipes
 
 ### default
 
-Include `user`, `install`, `node_exporter` , `jmx_exporter`, `grafana`,
-`config` and `service` recipes.
+Include `user`, `install`, `node_exporter` , `jmx_exporter`, `exporters`,
+`grafana`, `config` and `service` recipes.
 
 ### user
 
@@ -65,53 +72,58 @@ the following attribute is set to true value:
 
 `node['prometheus-platform']['has_alertmanager']`
 
-### node_exporter
+### node\_exporter
 
-Install and start prometheus node_exporter on node if node has been
+Install and start prometheus node\_exporter on node if node has been
 defined as a target in prometheus server (see .kitchen.yml for example).
 
 This recipe also generate node exporter related config to deploy on
 prometheus server.
 
-### jmx_exporter
+### jmx\_exporter
 
-Install and start prometheus jmx_exporter on node if node has been defined
+Install and start prometheus jmx\_exporter on node if node has been defined
 as a jmx target in prometheus server (see .kitchen.yml for example).
 
 This recipe also generate jmx exporter related config to deploy on
 prometheus server.
 
-### aerospike_exporter
+### exporters
 
-Install and start prometheus aerospike_exporter on node if node has been
-defined as a target in prometheus server (see .kitchen.yml for example).
+Install and configure a community prometheus exporter
 
-This recipe also generate aerospike exporter related config to deploy on
-prometheus server.
+#### Example
 
-### mysqld_exporter
+Define targets (nodes) where the zookeeper exporter will be deployed:
 
-Install and start prometheus jmx_exporter on node if node has been defined
-as a target in prometheus server (see .kitchen.yml for example).
+```json
+"prometheus-platform": {
+  "exporter": {
+    "zookeper": {
+      "targets": [
+        "prometheus-platform-kitchen-2.kitchen:9114"
+      ]
+    }
+  }
+}
+```
 
-This recipe also generate mysqld exporter related config to deploy on
-prometheus server.
+Get and compile the zookeeper exporter:
 
-### zookeeper_exporter
-
-Install and start prometheus zookeeper_exporter on node if node has been
-defined as a target in prometheus server (see .kitchen.yml for example).
-
-This recipe also generate zookeeper exporter related config to deploy on
-prometheus server.
-
-### statsd_exporter
-
-Install and start prometheus statsd_exporter on node if node has been defined
-as a target in prometheus server (see .kitchen.yml for example).
-
-This recipe also generate statsd exporter related config to deploy on
-prometheus server.
+```json
+"prometheus-platform": {
+  "exporter": {
+    "install_config": {
+      "zookeeper": {
+        "git_branch": "master",
+        "git_repo": "https://github.com/dln/zookeeper_exporter.git",
+        "path": "/opt/zookeeper_exporter",
+        "execstart_options": "-web.listen-address=:9114 localhost:2181"
+      }
+    }
+  }
+}
+```
 
 ### grafana
 
@@ -124,14 +136,27 @@ Install and start grafana on the host defined in the following attribute:
 Generate and deploy global config and alertmanager config for prometheus
 server.
 
+Alerting and recording rules are deployed through a data_bag.
+
 ### service
 
-Deploy systemd units for prometheus_server and alertmanager.
+Deploy systemd units for prometheus\_server and alertmanager.
 
 Resources/Providers
 -------------------
 
-None
+### Exporter
+
+#### Get source for the statsd exporter, compile it and start it using systemd
+
+```ruby
+prometheus_platform_exporter 'statsd' do
+  git_branch 'master'
+  git_repo 'https://github.com/prometheus/statsd_exporter.git'
+  path '/opt/statsd_exporter'
+  execstart_options '-web.listen-address=:9102 -statsd.listen-address=:9125'
+end
+```
 
 Changelog
 ---------
