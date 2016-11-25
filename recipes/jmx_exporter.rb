@@ -44,7 +44,8 @@ unless targets_config.nil? || targets_config.empty?
       end
     end
 
-    directory jmx_exporter['path'] do
+    directory "directory for #{target['name']}" do
+      path jmx_exporter['path']
       owner node['prometheus-platform']['user']
       group node['prometheus-platform']['group']
     end
@@ -53,7 +54,8 @@ unless targets_config.nil? || targets_config.empty?
     jmx_exporter_path = jmx_exporter['path']
     binary = 'jmx-exporter.jar'
 
-    remote_file "#{jmx_exporter_path}/#{binary}" do
+    remote_file "jmx binary for #{target['name']}" do
+      path "#{jmx_exporter_path}/#{binary}"
       source jmx_exporter['repo']
       owner node['prometheus-platform']['user']
       group node['prometheus-platform']['group']
