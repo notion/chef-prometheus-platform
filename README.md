@@ -113,12 +113,13 @@ Get and compile the zookeeper exporter:
 ```json
 "prometheus-platform": {
   "exporter": {
-    "install_config": {
       "zookeeper": {
-        "git_branch": "master",
-        "git_repo": "https://github.com/dln/zookeeper_exporter.git",
-        "path": "/opt/zookeeper_exporter",
-        "execstart_options": "-web.listen-address=:9114 localhost:2181"
+        "config": {
+          "git_branch": "master",
+          "git_repo": "https://github.com/dln/zookeeper_exporter.git",
+          "path": "/opt/zookeeper_exporter",
+          "execstart_options": "-web.listen-address=:9114 localhost:2181"
+        }
       }
     }
   }

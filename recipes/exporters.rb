@@ -14,14 +14,21 @@
 # limitations under the License.
 #
 
-if node['prometheus-platform']['exporter']['install_config']
+blacklisted_exporters =
+  node['prometheus-platform']['blacklisted_exporters']
+
+if node['prometheus-platform']['exporter']
   exporters =
-    node['prometheus-platform']['exporter']['install_config']
+    node['prometheus-platform']['exporter']
   exporters.each do |name, conf|
-    resource = prometheus_platform_exporter name
+    next if blacklisted_exporters.include? name
     conf.each do |key, value|
-      value = [value] unless value.is_a? Array
-      resource.send(key, *value)
+      next if key != 'config'
+      resource = prometheus_platform_exporter name
+      value.each do |attr, val|
+        val = [val] unless val.is_a? Array
+        resource.send(attr, *val)
+      end
     end
   end
 end

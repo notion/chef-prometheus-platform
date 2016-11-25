@@ -111,3 +111,7 @@ default['prometheus-platform']['auto_restart'] = true
 # Alertmanager config
 # Alertmanager will not be started if his config is empty
 default['prometheus-platform']['alertmanager']['config'] = {}
+
+# Blacklisted exporters (that should be installed used their own recipe,
+# not using the provider)
+default['prometheus-platform']['blacklisted_exporters'] = %w(jmx node)

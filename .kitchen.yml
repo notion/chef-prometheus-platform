@@ -62,8 +62,6 @@ suites:
               - prometheus-platform-kitchen-1.kitchen
               - prometheus-platform-kitchen-2.kitchen
           jmx:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:5556
             config:
               - name: prometheus-platform-kitchen-2.kitchen
                 app: test
@@ -72,39 +70,35 @@ suites:
                   hostPort: prometheus-platform-kitchen-2.kitchen:5555
                   rules:
                     - pattern: ".*"
+            targets:
+              - prometheus-platform-kitchen-2.kitchen:5556
           aerospike:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:9145
-          zookeeper:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:9114
-          statsd:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:9102
-          glusterfs:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:9189
-          mysqld:
-            targets:
-              - prometheus-platform-kitchen-2.kitchen:9104
-          install_config:
-            aerospike:
+            config:
               git_branch: master
               git_repo: https://github.com/alicebob/asprom.git
               path: /opt/aerospike_exporter
               execstart_options: -listen :9145 -node 127.0.0.1:3000
-            zookeeper:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen:9145
+          zookeeper:
+            config:
               git_branch: master
               git_repo: https://github.com/dln/zookeeper_exporter.git
               path: /opt/zookeeper_exporter
               execstart_options: -web.listen-address=:9114 localhost:2181
-            statsd:
+            targets:
+              - prometheus-platform-kitchen-2.kitchen:9114
+          statsd:
+            config:
               git_branch: master
               git_repo: https://github.com/prometheus/statsd_exporter.git
               path: /opt/statsd_exporter
               execstart_options:
                 -web.listen-address=:9102 -statsd.listen-address=:9125
-            mysqld:
+            targets:
+               - prometheus-platform-kitchen-2.kitchen:9189
+          mysqld:
+            config:
               run_user: root
               run_group: root
               go_compile: false
@@ -114,6 +108,7 @@ suites:
               ]]
               path: /opt/mysqld_exporter
               execstart_options: -web.listen-address=:9104
-
+            targets:
+              - prometheus-platform-kitchen-2.kitchen:9104
   <% end %>
 <% end %>
