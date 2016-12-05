@@ -115,3 +115,6 @@ default['prometheus-platform']['alertmanager']['config'] = {}
 # Blacklisted exporters (that should be installed used their own recipe,
 # not using the provider)
 default['prometheus-platform']['blacklisted_exporters'] = %w(jmx node)
+
+# Auto update for exporters
+default['prometheus-platform']['exporters_auto_update'] = false

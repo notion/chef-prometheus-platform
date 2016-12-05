@@ -69,12 +69,19 @@ action :create do # rubocop:disable Metrics/BlockLength
       unless git_repo.nil?
         package 'git'
         # Checkout exporter git source
+        exporters_auto_update =
+          node['prometheus-platform']['exporters_auto_update']
         git path do
           repository git_repo
           revision git_branch
           user node['prometheus-platform']['user']
           group node['prometheus-platform']['group']
-          action :export
+          if exporters_auto_update
+            action :sync
+          else
+            action :checkout
+          end
+          notifies :run, 'execute[build exporter]', :immediately
         end
       end
 
@@ -91,8 +98,10 @@ action :create do # rubocop:disable Metrics/BlockLength
           )
         end
         cwd new_resource.path
+        action :nothing
       end
 
+      # Set correct permissions for exporter binary
       file "#{path}/#{name}_exporter" do
         user node['prometheus-platform']['user']
         group node['prometheus-platform']['group']
@@ -127,6 +136,7 @@ action :create do # rubocop:disable Metrics/BlockLength
         content unit
         triggers_reload true
         action [:create, :enable, :start]
+        subscribes :restart, 'execute[build exporter]' if exporters_auto_update
       end
     end
   end
