@@ -98,7 +98,6 @@ action :create do # rubocop:disable Metrics/BlockLength
           )
         end
         cwd new_resource.path
-        action :nothing
       end
 
       # Set correct permissions for exporter binary
