@@ -21,10 +21,10 @@
 # (because of chef-solo for example).
 
 # prometheus package
-default['prometheus-platform']['version'] = '1.2.1'
+default['prometheus-platform']['version'] = '1.4.1'
 prometheus_version = node['prometheus-platform']['version']
 default['prometheus-platform']['checksum'] =
-  '77da9e852b4087d70fd6e04c3dc71b37127124a87ee6e66523b14bcbc28bd6ca'
+  '0511576f19ff060712d19fb343957113f6a47b2d2edcbe4889eaaa844b31f516'
 
 # Where to get the tarball for prometheus server
 default['prometheus-platform']['server_mirror_base'] =
@@ -39,8 +39,7 @@ default['prometheus-platform']['server_host'] = 'localhost'
 
 # Prometheus alert manager (will be installed on prometheus server)
 default['prometheus-platform']['has_alertmanager'] = true
-default['prometheus-platform']['alertmanager_path'] =
-  '/opt/alertmanager'
+default['prometheus-platform']['alertmanager_path'] = '/opt/alertmanager'
 
 default['prometheus-platform']['alertmanager_source'] =
   'https://github.com/prometheus/alertmanager.git'
