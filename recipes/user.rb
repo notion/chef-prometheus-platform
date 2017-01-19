@@ -16,7 +16,6 @@
 
 # Define prometheus group
 group node['prometheus-platform']['group'] do
-  append true
   system true
 end
 
