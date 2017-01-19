@@ -15,7 +15,9 @@
 #
 
 include_recipe "#{cookbook_name}::user"
-include_recipe "#{cookbook_name}::install"
+if node[cookbook_name]['master_host'] == node['fqdn']
+  include_recipe "#{cookbook_name}::install"
+end
 include_recipe "#{cookbook_name}::node_exporter"
 include_recipe "#{cookbook_name}::jmx_exporter"
 include_recipe "#{cookbook_name}::exporters"
