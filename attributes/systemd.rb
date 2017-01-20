@@ -23,14 +23,14 @@
 # Systemd service units, include config
 # Master
 prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
-has_alertmanager = node['prometheus-platform']['has_alertmanager']
+has_alertmanager = node['prometheus-platform']['alertmanager']['enable']
 storage_retention = node['prometheus-platform']['storage_retention']
 
 default['prometheus-platform']['prometheus_server']['start_cmd'] =
-  "#{node['prometheus-platform']['bin']} -config.file \
-    #{prometheus_home}/#{node['prometheus-platform']['config_filename']} \
-    #{'-alertmanager.url=http://localhost:9093' if has_alertmanager} \
-    #{"-storage.local.retention=#{storage_retention}" if storage_retention}"
+  "#{node['prometheus-platform']['bin']} -config.file "\
+  "#{prometheus_home}/#{node['prometheus-platform']['config_filename']} "\
+  "#{'-alertmanager.url=http://localhost:9093' if has_alertmanager} "\
+  "-storage.local.retention=#{storage_retention}"
 
 start_cmd = node['prometheus-platform']['prometheus_server']['start_cmd']
 
@@ -80,12 +80,12 @@ default['prometheus-platform']['prometheus_node']['unit'] = {
 
 # Alertmanager
 prometheus_alertmanager_home =
-  node['prometheus-platform']['alertmanager_path']
+  "#{node['prometheus-platform']['prefix_home']}/alertmanager"
 alertmanager_config_file =
   node['prometheus-platform']['alertmanager']['config_filename']
 prometheus_alertmanager_start_cmd =
-  "#{prometheus_alertmanager_home}/bin/alertmanager \
-  -config.file=#{prometheus_alertmanager_home}/#{alertmanager_config_file}"
+  "#{prometheus_alertmanager_home}/alertmanager "\
+  "-config.file=#{prometheus_alertmanager_home}/#{alertmanager_config_file}"
 
 default['prometheus-platform']['prometheus_alertmanager']['unit'] = {
   'Unit' => {
@@ -97,7 +97,7 @@ default['prometheus-platform']['prometheus_alertmanager']['unit'] = {
     'User' => node['prometheus-platform']['user'],
     'Group' => node['prometheus-platform']['group'],
     'WorkingDirectory' => prometheus_alertmanager_home,
-    'SyslogIdentifier' => 'prometheus-node',
+    'SyslogIdentifier' => 'prometheus-alertmanager',
     'Restart' => 'on-failure',
     'ExecStart' => prometheus_alertmanager_start_cmd
   },

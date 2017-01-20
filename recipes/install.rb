@@ -52,55 +52,14 @@ ark 'prometheus' do
 end
 
 # Prometheus alertmanager
-if node['prometheus-platform']['has_alertmanager']
-  # Install dependencies
-  %w(make git golang-bin glibc-static).each do |pkg|
-    package pkg do
-      retries node['prometheus-platform']['package_retries']
-    end
-  end
-  alertmanager_path = node['prometheus-platform']['alertmanager_path']
-
-  alertmanager_repo_path =
-    "#{alertmanager_path}/src/github.com/prometheus/alertmanager"
-  alertmanager_bin = "#{alertmanager_repo_path}/alertmanager"
-
-  # Create directory for alertmanager source
-  directory "#{alertmanager_path}/src/github.com/prometheus/alertmanager" do
-    owner user
-    group group
-    mode '0775'
-    recursive true
-  end
-
-  # Checkout alertmanager source
-  git "#{alertmanager_path}/src/github.com/prometheus/alertmanager" do
-    repository node['prometheus-platform']['alertmanager_source']
-    revision node['prometheus-platform']['alertmanager_rev']
-    user user
-    group group
-    action :checkout
-  end
-
-  execute 'set rights for alertmanager' do
-    command "chown -R #{user}:#{group} /opt/alertmanager"
-    cwd "#{alertmanager_path}/src/github.com/prometheus/alertmanager"
-    creates 'alertmanager'
-  end
-
-  # Build alertmanager binary using go
-  execute 'build alertmanager' do
-    command <<-EOF
-      export GOPATH=#{alertmanager_path}
-      make build
-    EOF
-    user user
-    group group
-    cwd "#{alertmanager_path}/src/github.com/prometheus/alertmanager"
-    creates 'alertmanager'
-  end
-
-  link "#{alertmanager_path}/bin/alertmanager" do
-    to alertmanager_bin
-  end
-end
+ark 'alertmanager' do
+  action :install
+  url node['prometheus-platform']['alertmanager']['download_url']
+  prefix_root node['prometheus-platform']['prefix_root']
+  prefix_home node['prometheus-platform']['prefix_home']
+  prefix_bin node['prometheus-platform']['prefix_bin']
+  has_binaries []
+  checksum node['prometheus-platform']['alertmanager']['checksum']
+  version node['prometheus-platform']['alertmanager']['version']
+  owner user
+end if node['prometheus-platform']['alertmanager']['enable']

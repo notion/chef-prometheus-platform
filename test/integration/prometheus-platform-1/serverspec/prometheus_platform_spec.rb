@@ -16,6 +16,7 @@
 
 require 'master'
 require 'grafana'
+require 'alertmanager'
 
 # Waiting for nodes to be up through Prometheus API
 (1..10).each do |try|

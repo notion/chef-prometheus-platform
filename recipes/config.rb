@@ -16,7 +16,6 @@
 
 # Deploy config on master
 if node['prometheus-platform']['master_host'] == node['fqdn']
-
   prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
   prometheus_config_filename = node['prometheus-platform']['config_filename']
 
@@ -49,19 +48,19 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
       group node['prometheus-platform']['group']
       mode '0600'
       variables content: content
-      notifies :restart, 'systemd_unit[prometheus_server.service]',
-               :delayed
+      notifies :restart, 'systemd_unit[prometheus_server.service]', :delayed
     end
   end
 
   # Generate alertmanager config
-  if node['prometheus-platform']['has_alertmanager']
+  if node['prometheus-platform']['alertmanager']['enable']
     alertmanager_home =
-      node['prometheus-platform']['alertmanager_path']
+      "#{node['prometheus-platform']['prefix_home']}/alertmanager"
     alertmanager_config_filename =
       node['prometheus-platform']['alertmanager']['config_filename']
     alertmanager_config =
       node['prometheus-platform']['alertmanager']['config'].to_hash
+
     template "#{alertmanager_home}/#{alertmanager_config_filename}" do
       source 'config.yml.erb'
       variables config: alertmanager_config

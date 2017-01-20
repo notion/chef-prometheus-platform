@@ -20,31 +20,33 @@
 # fall-back to hostname listing if user does not want to rely on searches
 # (because of chef-solo for example).
 
-# prometheus package
+# Prometheus package and version
 default['prometheus-platform']['version'] = '1.4.1'
 prometheus_version = node['prometheus-platform']['version']
 default['prometheus-platform']['checksum'] =
   '0511576f19ff060712d19fb343957113f6a47b2d2edcbe4889eaaa844b31f516'
-
-# Where to get the tarball for prometheus server
+# Where to get the tarball for Prometheus server
 default['prometheus-platform']['server_mirror_base'] =
-  'https://github.com/prometheus/prometheus/releases/download/'
+  'https://github.com/prometheus/prometheus/releases/download'
 prometheus_mirror = node['prometheus-platform']['server_mirror_base']
 server_package_name = "prometheus-#{prometheus_version}.linux-amd64.tar.gz"
 default['prometheus-platform']['server_mirror'] =
   "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
 
-# Prometheus server host
-default['prometheus-platform']['server_host'] = 'localhost'
-
 # Prometheus alert manager (will be installed on prometheus server)
-default['prometheus-platform']['has_alertmanager'] = true
-default['prometheus-platform']['alertmanager_path'] = '/opt/alertmanager'
-
-default['prometheus-platform']['alertmanager_source'] =
-  'https://github.com/prometheus/alertmanager.git'
-default['prometheus-platform']['alertmanager_rev'] = 'release-0.3'
-
+default['prometheus-platform']['alertmanager']['enable'] = true
+# Alert Manager version
+default['prometheus-platform']['alertmanager']['version'] = '0.5.1'
+alertmgr_version = node['prometheus-platform']['alertmanager']['version']
+default['prometheus-platform']['alertmanager']['checksum'] =
+  '9df9f0eb0061c8ead1b89060b851ea389fbdf6c1adc8513b40f6f4b90f4de932'
+# Where to get the tarball for Alert Manager
+default['prometheus-platform']['alertmanager']['base_url'] =
+  'https://github.com/prometheus/alertmanager/releases/download'
+alertmgr_base_url = node['prometheus-platform']['alertmanager']['base_url']
+alertmgr_pkg = "alertmanager-#{alertmgr_version}.linux-amd64.tar.gz"
+default['prometheus-platform']['alertmanager']['download_url'] =
+  "#{alertmgr_base_url}/v#{alertmgr_version}/#{alertmgr_pkg}"
 # Prometheus alertmanager config filename to load (generated through template)
 default['prometheus-platform']['alertmanager']['config_filename'] =
   'alertmanager.yml'
@@ -109,7 +111,20 @@ default['prometheus-platform']['auto_restart'] = true
 
 # Alertmanager config
 # Alertmanager will not be started if his config is empty
-default['prometheus-platform']['alertmanager']['config'] = {}
+default['prometheus-platform']['alertmanager']['config'] = {
+  'route': {
+    'receiver': 'webhook',
+    'group_wait': '30s',
+    'group_interval': '5m',
+    'repeat_interval': '4h'
+  },
+  'receivers': [{
+    'name': 'webhook',
+    'webhook_configs': [{
+      'url': 'localhost:8888'
+    }]
+  }]
+}
 
 # Blacklisted exporters (that should be installed used their own recipe,
 # not using the provider)

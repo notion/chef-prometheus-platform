@@ -44,16 +44,15 @@ systemd_unit 'prometheus_server.service' do
 end
 
 # Start alertmanager only if config has been done
-unless node['prometheus-platform']['alertmanager']['config'].empty?
-  systemd_unit 'prometheus_alertmanager.service' do
-    enabled true
-    active true
-    masked false
-    static false
-    content node[cookbook_name]['prometheus_alertmanager']['unit']
-    triggers_reload true
-    action [:create, :enable, :start]
-    subscribes :restart, config_files if auto_restart
-    only_if { node['prometheus-platform']['has_alertmanager'] && iam_server }
-  end
+alertmgr_enable = node['prometheus-platform']['alertmanager']['enable']
+systemd_unit 'prometheus_alertmanager.service' do
+  enabled true
+  active true
+  masked false
+  static false
+  content node[cookbook_name]['prometheus_alertmanager']['unit']
+  triggers_reload true
+  action [:create, :enable, :start]
+  subscribes :restart, config_files if auto_restart
+  only_if { alertmgr_enable && iam_server }
 end
