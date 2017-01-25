@@ -28,9 +28,14 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
   end
 
   # Set-up prometheus rules directory
-  directory node['prometheus-platform']['rules_dir'] do
-    owner node['prometheus-platform']['user']
-    group node['prometheus-platform']['group']
+  [
+    node['prometheus-platform']['rules_dir'],
+    node['prometheus-platform']['launch_config']['storage.local.path']
+  ].each do |dir|
+    directory dir do
+      owner node['prometheus-platform']['user']
+      group node['prometheus-platform']['group']
+    end
   end
 
   # Deploy alerting and recording rules from data_bag
@@ -54,6 +59,13 @@ if node['prometheus-platform']['master_host'] == node['fqdn']
 
   # Generate alertmanager config
   if node['prometheus-platform']['alertmanager']['enable']
+
+    alert = node['prometheus-platform']['alertmanager']
+    directory alert['launch_config']['storage.path'] do
+      owner node['prometheus-platform']['user']
+      group node['prometheus-platform']['group']
+    end
+
     alertmanager_home =
       "#{node['prometheus-platform']['prefix_home']}/alertmanager"
     alertmanager_config_filename =

@@ -19,7 +19,7 @@ require 'grafana'
 require 'alertmanager'
 
 # Waiting for nodes to be up through Prometheus API
-(1..10).each do |try|
+(1..5).each do |try|
   curl = 'http_proxy="" curl -s'
   url = 'http://localhost:9090/api/v1/query?query=up'
   up_nodes = `#{curl} "#{url}"`
@@ -29,7 +29,7 @@ require 'alertmanager'
     ) && up_nodes.include?(
       'prometheus-platform-kitchen-2'
     )
-  puts "Rest waiting to Schema Registry to be ready… (##{try}/5)"
+  puts "Rest waiting to Prometheus Serveur to be ready… (##{try}/5)"
   sleep(5)
 end
 

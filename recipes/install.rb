@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-user = node['prometheus-platform']['user']
-
 # tar may not be installed by default
 package 'tar' do
   retries node['prometheus-platform']['package_retries']
@@ -47,7 +45,6 @@ ark 'prometheus' do
   has_binaries []
   checksum node['prometheus-platform']['checksum']
   version node['prometheus-platform']['version']
-  owner user
 end
 
 # Prometheus alertmanager
@@ -60,6 +57,5 @@ ark 'alertmanager' do
   has_binaries []
   checksum node['prometheus-platform']['alertmanager']['checksum']
   version node['prometheus-platform']['alertmanager']['version']
-  owner user
   only_if { node['prometheus-platform']['alertmanager']['enable'] }
 end

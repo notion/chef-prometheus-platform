@@ -47,13 +47,11 @@ alertmgr_base_url = node['prometheus-platform']['alertmanager']['base_url']
 alertmgr_pkg = "alertmanager-#{alertmgr_version}.linux-amd64.tar.gz"
 default['prometheus-platform']['alertmanager']['download_url'] =
   "#{alertmgr_base_url}/v#{alertmgr_version}/#{alertmgr_pkg}"
-# Prometheus alertmanager config filename to load (generated through template)
-default['prometheus-platform']['alertmanager']['config_filename'] =
-  'alertmanager.yml'
 
 # User and group of prometheus process
 default['prometheus-platform']['user'] = 'prometheus'
 default['prometheus-platform']['group'] = 'prometheus'
+
 # Where to put installation dir
 default['prometheus-platform']['prefix_root'] = '/opt'
 # Where to link installation dir
@@ -63,10 +61,11 @@ default['prometheus-platform']['prefix_bin'] = '/opt/bin'
 
 # Prometheus default config filename to load (generated through template)
 default['prometheus-platform']['config_filename'] = 'prometheus.yml'
+config_filename = node['prometheus-platform']['config_filename']
 
+prometheus_path = "#{node['prometheus-platform']['prefix_home']}/prometheus"
 # Path to prometheus binary
-default['prometheus-platform']['bin'] =
-  "#{node['prometheus-platform']['prefix_home']}/prometheus/prometheus"
+default['prometheus-platform']['bin'] = "#{prometheus_path}/prometheus"
 
 # Configure retries for the package resources, default = global default (0)
 # (mostly used for test purpose
@@ -87,8 +86,13 @@ default['prometheus-platform']['config'] = {
      'static_configs' => ['targets' => ['localhost:9090', 'localhost:9100']]]
 }
 
-# Prometheus storage retention (default to 2 weeks)
-default['prometheus-platform']['storage_retention'] = '21600h'
+# Prometheus launch configuration, defined in systemd unit
+default['prometheus-platform']['launch_config'] = {
+  'config.file' => "#{prometheus_path}/#{config_filename}",
+  'alertmanager.url' => 'http://localhost:9093', # if has_alertmanager
+  'storage.local.path' => "#{prometheus_path}/data",
+  'storage.local.retention' => '21600h' # default 2 weeks
+}
 
 # Initialize run_state attribute
 node.run_state['prometheus-platform'] = {}
@@ -96,8 +100,7 @@ node.run_state['prometheus-platform']['config'] =
   node['prometheus-platform']['config'].to_hash
 
 # Prometheus rules directory
-default['prometheus-platform']['rules_dir'] =
-  "#{node['prometheus-platform']['prefix_home']}/prometheus/rules"
+default['prometheus-platform']['rules_dir'] = "#{prometheus_path}/rules"
 
 # Alerting and recording rules loaded through a data_bag
 default['prometheus-platform']['data_bag']['name'] = nil
@@ -110,6 +113,13 @@ default['prometheus-platform']['data_bag']['key'] = nil
 default['prometheus-platform']['auto_restart'] = true
 
 # Alertmanager config
+alertmgr_path = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
+
+# Prometheus alertmanager config filename to load (generated through template)
+default['prometheus-platform']['alertmanager']['config_filename'] =
+  'alertmanager.yml'
+alert_conf = node['prometheus-platform']['alertmanager']['config_filename']
+
 # Alertmanager will not be started if his config is empty
 default['prometheus-platform']['alertmanager']['config'] = {
   'route' => {
@@ -124,6 +134,12 @@ default['prometheus-platform']['alertmanager']['config'] = {
       'url' => 'localhost:8888'
     }]
   }]
+}
+
+# Alertmanager launch configuration, defined in systemd unit
+default['prometheus-platform']['alertmanager']['launch_config'] = {
+  'config.file' => "#{alertmgr_path}/#{alert_conf}",
+  'storage.path' => "#{alertmgr_path}/data"
 }
 
 # Blacklisted exporters (that should be installed used their own recipe,
