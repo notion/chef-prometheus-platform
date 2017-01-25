@@ -35,8 +35,7 @@ module Kitchen
           send("run_#{action}".to_sym,
                instances, services, helpers, args.first)
         else
-          run_converge(instances, services, helpers) if action == :verify
-          run_action_official(action, instances, *args) if action != :create
+          run_action_official(action, instances, *args)
         end
       end
 
@@ -48,7 +47,10 @@ module Kitchen
         run_action_official(:destroy, instances)
         run_converge(instances, services, helpers)
         run_action_official(:verify, instances)
-        run_action_official(:destroy, instances) if type == :passing
+        run_action_official(:destroy, instances) unless type == :never
+      rescue StandardError => error
+        run_action_official(:destroy, instances) if type == :always
+        raise error
       end
 
       def run_create(_instances, services, helpers, _type = nil)
