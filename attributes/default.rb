@@ -112,16 +112,16 @@ default['prometheus-platform']['auto_restart'] = true
 # Alertmanager config
 # Alertmanager will not be started if his config is empty
 default['prometheus-platform']['alertmanager']['config'] = {
-  'route': {
-    'receiver': 'webhook',
-    'group_wait': '30s',
-    'group_interval': '5m',
-    'repeat_interval': '4h'
+  'route' => {
+    'receiver' => 'webhook',
+    'group_wait' => '30s',
+    'group_interval' => '5m',
+    'repeat_interval' => '4h'
   },
-  'receivers': [{
-    'name': 'webhook',
-    'webhook_configs': [{
-      'url': 'localhost:8888'
+  'receivers' => [{
+    'name' => 'webhook',
+    'webhook_configs' => [{
+      'url' => 'localhost:8888'
     }]
   }]
 }

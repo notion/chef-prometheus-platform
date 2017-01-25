@@ -15,7 +15,6 @@
 #
 
 user = node['prometheus-platform']['user']
-group = node['prometheus-platform']['group']
 
 # tar may not be installed by default
 package 'tar' do
@@ -62,4 +61,5 @@ ark 'alertmanager' do
   checksum node['prometheus-platform']['alertmanager']['checksum']
   version node['prometheus-platform']['alertmanager']['version']
   owner user
-end if node['prometheus-platform']['alertmanager']['enable']
+  only_if { node['prometheus-platform']['alertmanager']['enable'] }
+end
