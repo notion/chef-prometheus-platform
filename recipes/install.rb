@@ -57,5 +57,4 @@ ark 'alertmanager' do
   has_binaries []
   checksum node['prometheus-platform']['alertmanager']['checksum']
   version node['prometheus-platform']['alertmanager']['version']
-  only_if { node['prometheus-platform']['alertmanager']['enable'] }
 end

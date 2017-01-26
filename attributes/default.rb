@@ -33,8 +33,6 @@ server_package_name = "prometheus-#{prometheus_version}.linux-amd64.tar.gz"
 default['prometheus-platform']['server_mirror'] =
   "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
 
-# Prometheus alert manager (will be installed on prometheus server)
-default['prometheus-platform']['alertmanager']['enable'] = true
 # Alert Manager version
 default['prometheus-platform']['alertmanager']['version'] = '0.5.1'
 alertmgr_version = node['prometheus-platform']['alertmanager']['version']

@@ -14,71 +14,63 @@
 # limitations under the License.
 #
 
-# Deploy config on master
-if node['prometheus-platform']['master_host'] == node['fqdn']
-  prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
-  prometheus_config_filename = node['prometheus-platform']['config_filename']
+prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
+prometheus_config_filename = node['prometheus-platform']['config_filename']
 
-  template "#{prometheus_home}/#{prometheus_config_filename}" do
-    source 'config.yml.erb'
-    variables config: node.run_state['prometheus-platform']['config']
+template "#{prometheus_home}/#{prometheus_config_filename}" do
+  source 'config.yml.erb'
+  variables config: node.run_state['prometheus-platform']['config']
+  user node['prometheus-platform']['user']
+  group node['prometheus-platform']['group']
+  mode '0600'
+end
+
+# Set-up prometheus rules directory
+[
+  node['prometheus-platform']['rules_dir'],
+  node['prometheus-platform']['launch_config']['storage.local.path']
+].each do |dir|
+  directory dir do
+    owner node['prometheus-platform']['user']
+    group node['prometheus-platform']['group']
+  end
+end
+
+# Deploy alerting and recording rules from data_bag
+data_bag = node['prometheus-platform']['data_bag']
+unless data_bag['name'].nil?
+  content = data_bag_item(
+    data_bag['name'],
+    data_bag['item']
+  )[data_bag['key']]
+
+  rules_dir = node['prometheus-platform']['rules_dir']
+  template "#{rules_dir}/#{data_bag['item']}.rules" do
+    source 'rules.erb'
     user node['prometheus-platform']['user']
     group node['prometheus-platform']['group']
     mode '0600'
+    variables content: content
+    notifies :restart, 'systemd_unit[prometheus_server.service]', :delayed
   end
+end
 
-  # Set-up prometheus rules directory
-  [
-    node['prometheus-platform']['rules_dir'],
-    node['prometheus-platform']['launch_config']['storage.local.path']
-  ].each do |dir|
-    directory dir do
-      owner node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
-    end
-  end
+# Generate alertmanager config
+alert = node['prometheus-platform']['alertmanager']
+directory alert['launch_config']['storage.path'] do
+  owner node['prometheus-platform']['user']
+  group node['prometheus-platform']['group']
+end
 
-  # Deploy alerting and recording rules from data_bag
-  data_bag = node['prometheus-platform']['data_bag']
-  unless data_bag['name'].nil?
-    content = data_bag_item(
-      data_bag['name'],
-      data_bag['item']
-    )[data_bag['key']]
+alertmgr_home = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
+alertmgr_conffile =
+  node['prometheus-platform']['alertmanager']['config_filename']
+alertmgr_config = node['prometheus-platform']['alertmanager']['config'].to_hash
 
-    rules_dir = node['prometheus-platform']['rules_dir']
-    template "#{rules_dir}/#{data_bag['item']}.rules" do
-      source 'rules.erb'
-      user node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
-      mode '0600'
-      variables content: content
-      notifies :restart, 'systemd_unit[prometheus_server.service]', :delayed
-    end
-  end
-
-  # Generate alertmanager config
-  if node['prometheus-platform']['alertmanager']['enable']
-
-    alert = node['prometheus-platform']['alertmanager']
-    directory alert['launch_config']['storage.path'] do
-      owner node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
-    end
-
-    alertmanager_home =
-      "#{node['prometheus-platform']['prefix_home']}/alertmanager"
-    alertmanager_config_filename =
-      node['prometheus-platform']['alertmanager']['config_filename']
-    alertmanager_config =
-      node['prometheus-platform']['alertmanager']['config'].to_hash
-
-    template "#{alertmanager_home}/#{alertmanager_config_filename}" do
-      source 'config.yml.erb'
-      variables config: alertmanager_config
-      user node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
-      mode '0600'
-    end
-  end
+template "#{alertmgr_home}/#{alertmgr_conffile}" do
+  source 'config.yml.erb'
+  variables config: alertmgr_config
+  user node['prometheus-platform']['user']
+  group node['prometheus-platform']['group']
+  mode '0600'
 end

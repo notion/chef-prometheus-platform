@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-include_recipe "#{cookbook_name}::client"
-if node[cookbook_name]['master_host'] == node['fqdn']
-  include_recipe "#{cookbook_name}::server"
-end
+include_recipe "#{cookbook_name}::user"
+include_recipe "#{cookbook_name}::install"
+include_recipe "#{cookbook_name}::config"
+include_recipe "#{cookbook_name}::service"
