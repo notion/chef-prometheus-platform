@@ -15,20 +15,10 @@
 #
 
 auto_restart = node['prometheus-platform']['auto_restart']
-prefix_home = node['prometheus-platform']['prefix_home']
-prometheus_config_filename = node['prometheus-platform']['config_filename']
 
-alertmanager_home =
-  node['prometheus-platform']['alertmanager_path']
-alertmanager_config_filename =
-  node['prometheus-platform']['alertmanager']['config_filename']
-
-config_files = [
-  "#{prefix_home}/prometheus/#{prometheus_config_filename}",
-  "#{alertmanager_home}/#{alertmanager_config_filename}"
-].map do |path|
-  "template[#{path}]"
-end
+# Prometheus Service
+p_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
+p_conffile = node['prometheus-platform']['config_filename']
 
 systemd_unit 'prometheus_server.service' do
   enabled true
@@ -38,10 +28,19 @@ systemd_unit 'prometheus_server.service' do
   content node[cookbook_name]['prometheus_server']['unit']
   triggers_reload true
   action [:create, :enable, :start]
-  subscribes :restart, config_files if auto_restart
+  subscribes :restart, "template[#{p_home}/#{p_conffile}]" if auto_restart
 end
 
-# Start alertmanager only if config has been done
+# Alertmanager Service (only if config is non-empty)
+alert_action = [:create, :enable, :start]
+if node['prometheus-platform']['alertmanager']['config'].empty?
+  alert_action = [:create, :disable, :stop]
+  auto_restart = false
+end
+
+am_home = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
+am_conffile = node['prometheus-platform']['alertmanager']['config_filename']
+
 systemd_unit 'prometheus_alertmanager.service' do
   enabled true
   active true
@@ -49,6 +48,6 @@ systemd_unit 'prometheus_alertmanager.service' do
   static false
   content node[cookbook_name]['prometheus_alertmanager']['unit']
   triggers_reload true
-  action [:create, :enable, :start]
-  subscribes :restart, config_files if auto_restart
+  action alert_action
+  subscribes :restart, "template[#{am_home}/#{am_conffile}]" if auto_restart
 end

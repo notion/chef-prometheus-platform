@@ -57,6 +57,17 @@ suites:
         package_retries: 1
         master_host: prometheus-platform-kitchen-1.kitchen
         grafana_host: prometheus-platform-kitchen-1.kitchen
+        alertmanager:
+          config:
+            route:
+              receiver: webhook
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 4h
+            receivers:
+              - name: webhook
+                webhook_configs:
+                  - url: localhost:8888
         exporter:
           node:
             targets:
