@@ -14,16 +14,18 @@
 # limitations under the License.
 #
 
-default['prometheus-platform']['node_version'] = '0.12.0'
-prometheus_node_version = node['prometheus-platform']['node_version']
+cookbook_name = 'prometheus-platform'
+
+default[cookbook_name]['node_version'] = '0.12.0'
+prometheus_node_version = node[cookbook_name]['node_version']
 
 # Where to get the tarball for prometheus node exporter
-default['prometheus-platform']['node_mirror_base'] =
+default[cookbook_name]['node_mirror_base'] =
   'https://github.com/prometheus/node_exporter/releases/download/'
-node.default['prometheus-platform']['node_checksum'] =
+node.default[cookbook_name]['node_checksum'] =
   'd48de5b89dac04aca751177afaa9b0919e5b3d389364d40160babc00d63aac7b'
-prometheus_mirror = node['prometheus-platform']['node_mirror_base']
+prometheus_mirror = node[cookbook_name]['node_mirror_base']
 node_package_name =
   "node_exporter-#{prometheus_node_version}.linux-amd64.tar.gz"
-default['prometheus-platform']['node_mirror'] =
+default[cookbook_name]['node_mirror'] =
   "#{prometheus_mirror}/#{prometheus_node_version}/#{node_package_name}"

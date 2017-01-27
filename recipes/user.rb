@@ -15,14 +15,14 @@
 #
 
 # Define prometheus group
-group node['prometheus-platform']['group'] do
+group node[cookbook_name]['group'] do
   system true
 end
 
 # Define prometheus user
-user node['prometheus-platform']['user'] do
+user node[cookbook_name]['user'] do
   comment 'prometheus service account'
-  group node['prometheus-platform']['group']
+  group node[cookbook_name]['group']
   system true
   shell '/sbin/nologin'
 end

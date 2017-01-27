@@ -14,11 +14,11 @@
 # limitations under the License.
 #
 
-auto_restart = node['prometheus-platform']['auto_restart']
+auto_restart = node[cookbook_name]['auto_restart']
 
 # Prometheus Service
-p_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
-p_conffile = node['prometheus-platform']['config_filename']
+p_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
+p_conffile = node[cookbook_name]['config_filename']
 
 systemd_unit 'prometheus_server.service' do
   enabled true
@@ -33,13 +33,13 @@ end
 
 # Alertmanager Service (only if config is non-empty)
 alert_action = [:create, :enable, :start]
-if node['prometheus-platform']['alertmanager']['config'].empty?
+if node[cookbook_name]['alertmanager']['config'].empty?
   alert_action = [:create, :disable, :stop]
   auto_restart = false
 end
 
-am_home = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
-am_conffile = node['prometheus-platform']['alertmanager']['config_filename']
+am_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
+am_conffile = node[cookbook_name]['alertmanager']['config_filename']
 
 systemd_unit 'prometheus_alertmanager.service' do
   enabled true

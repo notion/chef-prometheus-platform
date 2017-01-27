@@ -16,14 +16,14 @@
 
 # tar may not be installed by default
 package 'tar' do
-  retries node['prometheus-platform']['package_retries']
+  retries node[cookbook_name]['package_retries']
 end
 
 # Create prefix directories
 [
-  node['prometheus-platform']['prefix_root'],
-  node['prometheus-platform']['prefix_home'],
-  node['prometheus-platform']['prefix_bin']
+  node[cookbook_name]['prefix_root'],
+  node[cookbook_name]['prefix_home'],
+  node[cookbook_name]['prefix_bin']
 ].uniq.each do |dir_path|
   directory "prometheus-platform:#{dir_path}" do
     path dir_path
@@ -38,23 +38,23 @@ end
 # Prometheus server
 ark 'prometheus' do
   action :install
-  url node['prometheus-platform']['server_mirror']
-  prefix_root node['prometheus-platform']['prefix_root']
-  prefix_home node['prometheus-platform']['prefix_home']
-  prefix_bin node['prometheus-platform']['prefix_bin']
+  url node[cookbook_name]['server_mirror']
+  prefix_root node[cookbook_name]['prefix_root']
+  prefix_home node[cookbook_name]['prefix_home']
+  prefix_bin node[cookbook_name]['prefix_bin']
   has_binaries []
-  checksum node['prometheus-platform']['checksum']
-  version node['prometheus-platform']['version']
+  checksum node[cookbook_name]['checksum']
+  version node[cookbook_name]['version']
 end
 
 # Prometheus alertmanager
 ark 'alertmanager' do
   action :install
-  url node['prometheus-platform']['alertmanager']['download_url']
-  prefix_root node['prometheus-platform']['prefix_root']
-  prefix_home node['prometheus-platform']['prefix_home']
-  prefix_bin node['prometheus-platform']['prefix_bin']
+  url node[cookbook_name]['alertmanager']['download_url']
+  prefix_root node[cookbook_name]['prefix_root']
+  prefix_home node[cookbook_name]['prefix_home']
+  prefix_bin node[cookbook_name]['prefix_bin']
   has_binaries []
-  checksum node['prometheus-platform']['alertmanager']['checksum']
-  version node['prometheus-platform']['alertmanager']['version']
+  checksum node[cookbook_name]['alertmanager']['checksum']
+  version node[cookbook_name]['alertmanager']['version']
 end

@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-jmx_exporter = node['prometheus-platform']['exporter']['jmx']
+jmx_exporter = node[cookbook_name]['exporter']['jmx']
 
 # Generate/deploy config on prometheus server
-if node['prometheus-platform']['master_host'] == node['fqdn']
+if node[cookbook_name]['master_host'] == node['fqdn']
   targets =
     jmx_exporter['targets'].to_a
 
   unless targets.nil? || targets.empty?
-    node.run_state['prometheus-platform']['config']['scrape_configs'] =
-      node.run_state['prometheus-platform']['config']['scrape_configs'] +
+    node.run_state[cookbook_name]['config']['scrape_configs'] =
+      node.run_state[cookbook_name]['config']['scrape_configs'] +
       ['job_name' => 'jmx',
        'scrape_interval' => '1m',
        'scrape_timeout' => '30s',
@@ -40,14 +40,14 @@ unless targets_config.nil? || targets_config.empty?
     java_package = jmx_exporter['java'][node['platform']]
     package java_package do
       unless java_package.to_s.empty?
-        retries node['prometheus-platform']['package_retries']
+        retries node[cookbook_name]['package_retries']
       end
     end
 
     directory "directory for #{target['name']}" do
       path jmx_exporter['path']
-      owner node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
+      owner node[cookbook_name]['user']
+      group node[cookbook_name]['group']
     end
 
     # Download jar
@@ -57,8 +57,8 @@ unless targets_config.nil? || targets_config.empty?
     remote_file "jmx binary for #{target['name']}" do
       path "#{jmx_exporter_path}/#{binary}"
       source jmx_exporter['repo']
-      owner node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
+      owner node[cookbook_name]['user']
+      group node[cookbook_name]['group']
     end
 
     # Generate config for prometheus jmx exporter
@@ -67,8 +67,8 @@ unless targets_config.nil? || targets_config.empty?
     template "#{jmx_exporter_path}/#{target['name']}-#{target['app']}.yml" do
       source 'config.yml.erb'
       variables config: target['options']
-      user node['prometheus-platform']['user']
-      group node['prometheus-platform']['group']
+      user node[cookbook_name]['user']
+      group node[cookbook_name]['group']
       mode '0600'
     end
 
@@ -80,8 +80,8 @@ unless targets_config.nil? || targets_config.empty?
       },
       'Service' => {
         'Type' => 'simple',
-        'User' => node['prometheus-platform']['user'],
-        'Group' => node['prometheus-platform']['group'],
+        'User' => node[cookbook_name]['user'],
+        'Group' => node[cookbook_name]['group'],
         'Restart' => 'on-failure',
         'ExecStart' =>
           "/usr/bin/java #{java_opts if java_opts} -jar \

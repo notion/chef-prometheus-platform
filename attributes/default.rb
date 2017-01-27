@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+cookbook_name = 'prometheus-platform'
+
 # Cluster Search (cluster-search) is a simple cookbook library which simplify
 # the search of members of a cluster. It relies on Chef search with a size
 # guard (to avoid inconsistencies during initial convergence) and allows a
@@ -21,56 +23,56 @@
 # (because of chef-solo for example).
 
 # Prometheus package and version
-default['prometheus-platform']['version'] = '1.4.1'
-prometheus_version = node['prometheus-platform']['version']
-default['prometheus-platform']['checksum'] =
+default[cookbook_name]['version'] = '1.4.1'
+prometheus_version = node[cookbook_name]['version']
+default[cookbook_name]['checksum'] =
   '0511576f19ff060712d19fb343957113f6a47b2d2edcbe4889eaaa844b31f516'
 # Where to get the tarball for Prometheus server
-default['prometheus-platform']['server_mirror_base'] =
+default[cookbook_name]['server_mirror_base'] =
   'https://github.com/prometheus/prometheus/releases/download'
-prometheus_mirror = node['prometheus-platform']['server_mirror_base']
+prometheus_mirror = node[cookbook_name]['server_mirror_base']
 server_package_name = "prometheus-#{prometheus_version}.linux-amd64.tar.gz"
-default['prometheus-platform']['server_mirror'] =
+default[cookbook_name]['server_mirror'] =
   "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
 
 # Alert Manager version
-default['prometheus-platform']['alertmanager']['version'] = '0.5.1'
-alertmgr_version = node['prometheus-platform']['alertmanager']['version']
-default['prometheus-platform']['alertmanager']['checksum'] =
+default[cookbook_name]['alertmanager']['version'] = '0.5.1'
+alertmgr_version = node[cookbook_name]['alertmanager']['version']
+default[cookbook_name]['alertmanager']['checksum'] =
   '9df9f0eb0061c8ead1b89060b851ea389fbdf6c1adc8513b40f6f4b90f4de932'
 # Where to get the tarball for Alert Manager
-default['prometheus-platform']['alertmanager']['base_url'] =
+default[cookbook_name]['alertmanager']['base_url'] =
   'https://github.com/prometheus/alertmanager/releases/download'
-alertmgr_base_url = node['prometheus-platform']['alertmanager']['base_url']
+alertmgr_base_url = node[cookbook_name]['alertmanager']['base_url']
 alertmgr_pkg = "alertmanager-#{alertmgr_version}.linux-amd64.tar.gz"
-default['prometheus-platform']['alertmanager']['download_url'] =
+default[cookbook_name]['alertmanager']['download_url'] =
   "#{alertmgr_base_url}/v#{alertmgr_version}/#{alertmgr_pkg}"
 
 # User and group of prometheus process
-default['prometheus-platform']['user'] = 'prometheus'
-default['prometheus-platform']['group'] = 'prometheus'
+default[cookbook_name]['user'] = 'prometheus'
+default[cookbook_name]['group'] = 'prometheus'
 
 # Where to put installation dir
-default['prometheus-platform']['prefix_root'] = '/opt'
+default[cookbook_name]['prefix_root'] = '/opt'
 # Where to link installation dir
-default['prometheus-platform']['prefix_home'] = '/opt'
+default[cookbook_name]['prefix_home'] = '/opt'
 # Where to link binaries
-default['prometheus-platform']['prefix_bin'] = '/opt/bin'
+default[cookbook_name]['prefix_bin'] = '/opt/bin'
 
 # Prometheus default config filename to load (generated through template)
-default['prometheus-platform']['config_filename'] = 'prometheus.yml'
-config_filename = node['prometheus-platform']['config_filename']
+default[cookbook_name]['config_filename'] = 'prometheus.yml'
+config_filename = node[cookbook_name]['config_filename']
 
-prometheus_path = "#{node['prometheus-platform']['prefix_home']}/prometheus"
+prometheus_path = "#{node[cookbook_name]['prefix_home']}/prometheus"
 # Path to prometheus binary
-default['prometheus-platform']['bin'] = "#{prometheus_path}/prometheus"
+default[cookbook_name]['bin'] = "#{prometheus_path}/prometheus"
 
 # Configure retries for the package resources, default = global default (0)
 # (mostly used for test purpose
-default['prometheus-platform']['package_retries'] = nil
+default[cookbook_name]['package_retries'] = nil
 
 # Prometheus config
-default['prometheus-platform']['config'] = {
+default[cookbook_name]['config'] = {
   'global' => {
     'scrape_interval' => '15s',
     'evaluation_interval' => '15s',
@@ -85,7 +87,7 @@ default['prometheus-platform']['config'] = {
 }
 
 # Prometheus launch configuration, defined in systemd unit
-default['prometheus-platform']['launch_config'] = {
+default[cookbook_name]['launch_config'] = {
   'config.file' => "#{prometheus_path}/#{config_filename}",
   'alertmanager.url' => 'http://localhost:9093', # if has_alertmanager
   'storage.local.path' => "#{prometheus_path}/data",
@@ -93,33 +95,33 @@ default['prometheus-platform']['launch_config'] = {
 }
 
 # Initialize run_state attribute
-node.run_state['prometheus-platform'] = {}
-node.run_state['prometheus-platform']['config'] =
-  node['prometheus-platform']['config'].to_hash
+node.run_state[cookbook_name] = {}
+node.run_state[cookbook_name]['config'] =
+  node[cookbook_name]['config'].to_hash
 
 # Prometheus rules directory
-default['prometheus-platform']['rules_dir'] = "#{prometheus_path}/rules"
+default[cookbook_name]['rules_dir'] = "#{prometheus_path}/rules"
 
 # Alerting and recording rules loaded through a data_bag
-default['prometheus-platform']['data_bag']['name'] = nil
+default[cookbook_name]['data_bag']['name'] = nil
 # Data bag item to load
-default['prometheus-platform']['data_bag']['item'] = nil
+default[cookbook_name]['data_bag']['item'] = nil
 # Key used to load the value in data bag item containing the data
-default['prometheus-platform']['data_bag']['key'] = nil
+default[cookbook_name]['data_bag']['key'] = nil
 
 # Should we restart service after config update?
-default['prometheus-platform']['auto_restart'] = true
+default[cookbook_name]['auto_restart'] = true
 
 # Alertmanager config
-alertmgr_path = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
+alertmgr_path = "#{node[cookbook_name]['prefix_home']}/alertmanager"
 
 # Prometheus alertmanager config filename to load (generated through template)
-default['prometheus-platform']['alertmanager']['config_filename'] =
+default[cookbook_name]['alertmanager']['config_filename'] =
   'alertmanager.yml'
-alert_conf = node['prometheus-platform']['alertmanager']['config_filename']
+alert_conf = node[cookbook_name]['alertmanager']['config_filename']
 
 # Alertmanager will not be started if his config is empty
-default['prometheus-platform']['alertmanager']['config'] = {
+default[cookbook_name]['alertmanager']['config'] = {
   # 'route' => {
   #   'receiver' => 'webhook',
   #   'group_wait' => '30s',
@@ -135,14 +137,14 @@ default['prometheus-platform']['alertmanager']['config'] = {
 }
 
 # Alertmanager launch configuration, defined in systemd unit
-default['prometheus-platform']['alertmanager']['launch_config'] = {
+default[cookbook_name]['alertmanager']['launch_config'] = {
   'config.file' => "#{alertmgr_path}/#{alert_conf}",
   'storage.path' => "#{alertmgr_path}/data"
 }
 
 # Blacklisted exporters (that should be installed used their own recipe,
 # not using the provider)
-default['prometheus-platform']['blacklisted_exporters'] = %w(jmx node)
+default[cookbook_name]['blacklisted_exporters'] = %w(jmx node)
 
 # Auto update for exporters
-default['prometheus-platform']['exporters_auto_update'] = false
+default[cookbook_name]['exporters_auto_update'] = false

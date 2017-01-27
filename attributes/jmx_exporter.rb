@@ -14,35 +14,37 @@
 # limitations under the License.
 #
 
+cookbook_name = 'prometheus-platform'
+
 # Install jmx_exporter
-default['prometheus-platform']['exporter']['jmx']['install'] = false
+default[cookbook_name]['exporter']['jmx']['install'] = false
 
 # Version of jmx_exporter
-default['prometheus-platform']['exporter']['jmx']['version'] = '0.6'
-version = node['prometheus-platform']['exporter']['jmx']['version']
+default[cookbook_name]['exporter']['jmx']['version'] = '0.6'
+version = node[cookbook_name]['exporter']['jmx']['version']
 
 # Maven repository where jar is hosted
 maven_base_url =
   'http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_httpserver'
 jar = "jmx_prometheus_httpserver-#{version}-jar-with-dependencies.jar"
 
-default['prometheus-platform']['exporter']['jmx']['repo'] =
+default[cookbook_name]['exporter']['jmx']['repo'] =
   "#{maven_base_url}/#{version}/#{jar}"
 
 # Directory where jmx exporter is installed
-default['prometheus-platform']['exporter']['jmx']['path'] =
-  "#{node['prometheus-platform']['prefix_home']}/jmx_exporter"
+default[cookbook_name]['exporter']['jmx']['path'] =
+  "#{node[cookbook_name]['prefix_home']}/jmx_exporter"
 
 # Java package to install by platform
-default['prometheus-platform']['exporter']['jmx']['java'] = {
+default[cookbook_name]['exporter']['jmx']['java'] = {
   'centos' => 'java-1.8.0-openjdk-headless'
 }
 
 # Default options for prometheus jmx http server
-default['prometheus-platform']['exporter']['jmx']['java_opts'] = nil
+default[cookbook_name]['exporter']['jmx']['java_opts'] = nil
 
 # Prometheus jmx targets
-default['prometheus-platform']['exporter']['jmx']['targets'] = []
+default[cookbook_name]['exporter']['jmx']['targets'] = []
 
 # Prometheus jmx_exporter config for targets
-default['prometheus-platform']['exporter']['jmx']['config'] = {}
+default[cookbook_name]['exporter']['jmx']['config'] = {}

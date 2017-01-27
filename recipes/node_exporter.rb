@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-node_exporter = node['prometheus-platform']['exporter']['node']
+node_exporter = node[cookbook_name]['exporter']['node']
 
 # Generate prometheus scrape config
-if node['prometheus-platform']['master_host'] == node['fqdn']
+if node[cookbook_name]['master_host'] == node['fqdn']
   targets =
     node_exporter['targets'].map { |target| "#{target}:9100" }.to_a
 
   unless targets.nil? || targets.empty?
-    node.run_state['prometheus-platform']['config']['scrape_configs'] =
-      node.run_state['prometheus-platform']['config']['scrape_configs'] +
+    node.run_state[cookbook_name]['config']['scrape_configs'] =
+      node.run_state[cookbook_name]['config']['scrape_configs'] +
       ['job_name' => 'node',
        'scrape_interval' => '5s',
        'static_configs' => ['targets' => targets]]
@@ -35,9 +35,9 @@ end
 node_exporter['targets'].each do |target| # rubocop:disable Metrics/BlockLength
   next unless target == node['fqdn']
   [
-    node['prometheus-platform']['prefix_root'],
-    node['prometheus-platform']['prefix_home'],
-    node['prometheus-platform']['prefix_bin']
+    node[cookbook_name]['prefix_root'],
+    node[cookbook_name]['prefix_home'],
+    node[cookbook_name]['prefix_bin']
   ].uniq.each do |dir_path|
     directory "prometheus-platform-node:#{dir_path}" do
       path dir_path
@@ -52,15 +52,15 @@ node_exporter['targets'].each do |target| # rubocop:disable Metrics/BlockLength
   # Install prometheus_node exporter
   ark 'prometheus_node' do
     action :install
-    url node['prometheus-platform']['node_mirror']
-    prefix_root node['prometheus-platform']['prefix_root']
-    prefix_home node['prometheus-platform']['prefix_home']
-    prefix_bin node['prometheus-platform']['prefix_bin']
+    url node[cookbook_name]['node_mirror']
+    prefix_root node[cookbook_name]['prefix_root']
+    prefix_home node[cookbook_name]['prefix_home']
+    prefix_bin node[cookbook_name]['prefix_bin']
     has_binaries []
-    checksum node['prometheus-platform']['node_checksum']
-    version node['prometheus-platform']['node_version']
-    owner node['prometheus-platform']['user']
-    group node['prometheus-platform']['group']
+    checksum node[cookbook_name]['node_checksum']
+    version node[cookbook_name]['node_version']
+    owner node[cookbook_name]['user']
+    group node[cookbook_name]['group']
   end
 
   # Deploy systemd unit

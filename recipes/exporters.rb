@@ -15,11 +15,11 @@
 #
 
 blacklisted_exporters =
-  node['prometheus-platform']['blacklisted_exporters']
+  node[cookbook_name]['blacklisted_exporters']
 
-if node['prometheus-platform']['exporter']
+if node[cookbook_name]['exporter']
   exporters =
-    node['prometheus-platform']['exporter']
+    node[cookbook_name]['exporter']
   exporters.each do |name, conf|
     next if blacklisted_exporters.include? name
     conf.each do |key, value|

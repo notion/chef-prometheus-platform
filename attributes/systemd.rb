@@ -14,30 +14,26 @@
 # limitations under the License.
 #
 
-# Cluster Search (cluster-search) is a simple cookbook library which simplify
-# the search of members of a cluster. It relies on Chef search with a size
-# guard (to avoid inconsistencies during initial convergence) and allows a
-# fall-back to hostname listing if user does not want to rely on searches
-# (because of chef-solo for example).
+cookbook_name = 'prometheus-platform'
 
 # Systemd service units, include config
 # Master
-prometheus_home = "#{node['prometheus-platform']['prefix_home']}/prometheus"
-launch_config = node['prometheus-platform']['launch_config']
+prometheus_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
+launch_config = node[cookbook_name]['launch_config']
 
 start_cmd =
-  "#{node['prometheus-platform']['bin']} "\
+  "#{node[cookbook_name]['bin']} "\
   "#{launch_config.map { |k, v| "-#{k}=#{v}" }.join(' ')}"
 
-default['prometheus-platform']['prometheus_server']['unit'] = {
+default[cookbook_name]['prometheus_server']['unit'] = {
   'Unit' => {
     'Description' => 'Prometheus server',
     'After' => 'network.target'
   },
   'Service' => {
     'Type' => 'simple',
-    'User' => node['prometheus-platform']['user'],
-    'Group' => node['prometheus-platform']['group'],
+    'User' => node[cookbook_name]['user'],
+    'Group' => node[cookbook_name]['group'],
     'WorkingDirectory' => prometheus_home,
     'LimitNOFILE' => 65_536,
     'SyslogIdentifier' => 'prometheus-server',
@@ -51,18 +47,18 @@ default['prometheus-platform']['prometheus_server']['unit'] = {
 
 # Node exporter
 prometheus_node_exporter_home =
-  "#{node['prometheus-platform']['prefix_home']}/prometheus_node"
+  "#{node[cookbook_name]['prefix_home']}/prometheus_node"
 prometheus_node_start_cmd = "#{prometheus_node_exporter_home}/node_exporter"
 
-default['prometheus-platform']['prometheus_node']['unit'] = {
+default[cookbook_name]['prometheus_node']['unit'] = {
   'Unit' => {
     'Description' => 'Prometheus node exporter',
     'After' => 'network.target'
   },
   'Service' => {
     'Type' => 'simple',
-    'User' => node['prometheus-platform']['user'],
-    'Group' => node['prometheus-platform']['group'],
+    'User' => node[cookbook_name]['user'],
+    'Group' => node[cookbook_name]['group'],
     'WorkingDirectory' => prometheus_node_exporter_home,
     'SyslogIdentifier' => 'prometheus-node',
     'Restart' => 'on-failure',
@@ -74,21 +70,21 @@ default['prometheus-platform']['prometheus_node']['unit'] = {
 }
 
 # Alertmanager
-alertmgr_home = "#{node['prometheus-platform']['prefix_home']}/alertmanager"
-alert_launch  = node['prometheus-platform']['alertmanager']['launch_config']
+alertmgr_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
+alert_launch  = node[cookbook_name]['alertmanager']['launch_config']
 alertmgr_start_cmd =
   "#{alertmgr_home}/alertmanager "\
   "#{alert_launch.map { |k, v| "-#{k}=#{v}" }.join(' ')}"
 
-default['prometheus-platform']['prometheus_alertmanager']['unit'] = {
+default[cookbook_name]['prometheus_alertmanager']['unit'] = {
   'Unit' => {
     'Description' => 'Prometheus alert manager',
     'After' => 'network.target'
   },
   'Service' => {
     'Type' => 'simple',
-    'User' => node['prometheus-platform']['user'],
-    'Group' => node['prometheus-platform']['group'],
+    'User' => node[cookbook_name]['user'],
+    'Group' => node[cookbook_name]['group'],
     'WorkingDirectory' => alertmgr_home,
     'SyslogIdentifier' => 'prometheus-alertmanager',
     'Restart' => 'on-failure',
