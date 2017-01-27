@@ -14,12 +14,25 @@
 # limitations under the License.
 #
 
+def h_to_a(obj)
+  if obj.is_a?(Hash)
+    obj =
+      if obj.keys.map { |k| !k.to_s.start_with?('index_') }.any?
+        obj.map { |k, v| [k, h_to_a(v)] }.to_h
+      else
+        obj.values
+      end
+  end
+  obj.is_a?(Array) ? obj.map { |v| h_to_a(v) } : obj
+end
+
 prometheus_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
 prometheus_config_filename = node[cookbook_name]['config_filename']
+prometheus_config = h_to_a(node.run_state[cookbook_name]['config'].to_hash)
 
 template "#{prometheus_home}/#{prometheus_config_filename}" do
   source 'config.yml.erb'
-  variables config: node.run_state[cookbook_name]['config']
+  variables config: prometheus_config
   user node[cookbook_name]['user']
   group node[cookbook_name]['group']
   mode '0600'
@@ -63,9 +76,8 @@ directory alert['launch_config']['storage.path'] do
 end
 
 alertmgr_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
-alertmgr_conffile =
-  node[cookbook_name]['alertmanager']['config_filename']
-alertmgr_config = node[cookbook_name]['alertmanager']['config'].to_hash
+alertmgr_conffile = node[cookbook_name]['alertmanager']['config_filename']
+alertmgr_config = h_to_a(node[cookbook_name]['alertmanager']['config'].to_hash)
 
 template "#{alertmgr_home}/#{alertmgr_conffile}" do
   source 'config.yml.erb'

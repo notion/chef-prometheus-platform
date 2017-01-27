@@ -56,7 +56,6 @@ suites:
       prometheus-platform:
         package_retries: 1
         master_host: prometheus-platform-kitchen-1.kitchen
-        grafana_host: prometheus-platform-kitchen-1.kitchen
         alertmanager:
           config:
             route:

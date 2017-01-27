@@ -80,10 +80,18 @@ default[cookbook_name]['config'] = {
       'monitor' => 'codelab-monitor'
     }
   },
-  'scrape_configs' =>
-    ['job_name' => 'prometheus',
-     'scrape_interval' => '5s',
-     'static_configs' => ['targets' => ['localhost:9090', 'localhost:9100']]]
+  'scrape_configs' => {
+    'index_1' => # will be converted to array, allow overriding
+    {
+      'job_name' => 'prometheus',
+      'scrape_interval' => '5s',
+      'static_configs' => {
+        'index_1' => {
+          'targets' => ['localhost:9090', 'localhost:9100']
+        }
+      }
+    }
+  }
 }
 
 # Prometheus launch configuration, defined in systemd unit

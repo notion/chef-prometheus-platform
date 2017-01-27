@@ -22,11 +22,11 @@ if node[cookbook_name]['master_host'] == node['fqdn']
     node_exporter['targets'].map { |target| "#{target}:9100" }.to_a
 
   unless targets.nil? || targets.empty?
-    node.run_state[cookbook_name]['config']['scrape_configs'] =
-      node.run_state[cookbook_name]['config']['scrape_configs'] +
-      ['job_name' => 'node',
-       'scrape_interval' => '5s',
-       'static_configs' => ['targets' => targets]]
+    node.run_state[cookbook_name]['config']['scrape_configs']['index_node'] = {
+      'job_name' => 'node',
+      'scrape_interval' => '5s',
+      'static_configs' => ['targets' => targets]
+    }
   end
 end
 

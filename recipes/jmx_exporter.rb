@@ -22,12 +22,12 @@ if node[cookbook_name]['master_host'] == node['fqdn']
     jmx_exporter['targets'].to_a
 
   unless targets.nil? || targets.empty?
-    node.run_state[cookbook_name]['config']['scrape_configs'] =
-      node.run_state[cookbook_name]['config']['scrape_configs'] +
-      ['job_name' => 'jmx',
-       'scrape_interval' => '1m',
-       'scrape_timeout' => '30s',
-       'static_configs' => ['targets' => targets]]
+    node.run_state[cookbook_name]['config']['scrape_configs']['index_jmx'] = {
+      'job_name' => 'jmx',
+      'scrape_interval' => '1m',
+      'scrape_timeout' => '30s',
+      'static_configs' => ['targets' => targets]
+    }
   end
 end
 

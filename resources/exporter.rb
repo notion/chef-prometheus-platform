@@ -34,12 +34,13 @@ action :create do # rubocop:disable Metrics/BlockLength
       node['prometheus-platform']['exporter'][exporter]['targets'].to_a
 
     unless targets.nil? || targets.empty?
-      node.run_state['prometheus-platform']['config']['scrape_configs'] =
-        node.run_state['prometheus-platform']['config']['scrape_configs'] +
-        ['job_name' => name,
-         'scrape_interval' => '1m',
-         'scrape_timeout' => '30s',
-         'static_configs' => ['targets' => targets]]
+      tmp_config = node.run_state['prometheus-platform']['config']
+      tmp_config['scrape_configs']["index_#{name}"] = {
+        'job_name' => name,
+        'scrape_interval' => '1m',
+        'scrape_timeout' => '30s',
+        'static_configs' => ['targets' => targets]
+      }
     end
   end
 
