@@ -152,7 +152,7 @@ default[cookbook_name]['alertmanager']['launch_config'] = {
 
 # Blacklisted exporters (that should be installed used their own recipe,
 # not using the provider)
-default[cookbook_name]['blacklisted_exporters'] = %w(jmx node)
+default[cookbook_name]['blacklisted_exporters'] = %w[jmx node]
 
 # Auto update for exporters
 default[cookbook_name]['exporters_auto_update'] = false

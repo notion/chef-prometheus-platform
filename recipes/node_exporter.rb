@@ -71,6 +71,6 @@ node_exporter['targets'].each do |target| # rubocop:disable Metrics/BlockLength
     static false
     content node[cookbook_name]['prometheus_node']['unit']
     triggers_reload true
-    action [:create, :enable, :start]
+    action %i[create enable start]
   end
 end

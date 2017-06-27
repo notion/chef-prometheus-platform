@@ -27,14 +27,14 @@ systemd_unit 'prometheus_server.service' do
   static false
   content node[cookbook_name]['prometheus_server']['unit']
   triggers_reload true
-  action [:create, :enable, :start]
+  action %i[create enable start]
   subscribes :restart, "template[#{p_home}/#{p_conffile}]" if auto_restart
 end
 
 # Alertmanager Service (only if config is non-empty)
-alert_action = [:create, :enable, :start]
+alert_action = %i[create enable start]
 if node[cookbook_name]['alertmanager']['config'].empty?
-  alert_action = [:create, :disable, :stop]
+  alert_action = %i[create disable stop]
   auto_restart = false
 end
 

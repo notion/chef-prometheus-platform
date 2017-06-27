@@ -101,7 +101,7 @@ unless targets_config.nil? || targets_config.empty?
       static false
       content unit
       triggers_reload true
-      action [:create, :enable, :start]
+      action %i[create enable start]
     end
   end
 end

@@ -31,7 +31,7 @@ module Kitchen
         helpers = instances[0..0]
         services = instances - helpers
 
-        if %i(destroy test create converge).include? action
+        if %i[destroy test create converge].include? action
           send("run_#{action}".to_sym,
                instances, services, helpers, args.first)
         else

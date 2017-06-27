@@ -8,5 +8,7 @@ source_url 'https://gitlab.com/chef-platform/prometheus-platform'
 issues_url 'https://gitlab.com/chef-platform/prometheus-platform/issues'
 version '1.0.0'
 
+chef_version '>= 12.14'
+
 depends 'ark'
 supports 'centos', '>= 7.1'

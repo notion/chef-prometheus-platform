@@ -59,7 +59,7 @@ action :create do # rubocop:disable Metrics/BlockLength
 
       # Install dependencies
       if go_compile
-        %w(make golang-bin glibc-static).each do |pkg|
+        %w[make golang-bin glibc-static].each do |pkg|
           package "install #{pkg} for #{name} exporter" do
             package_name pkg
             retries node['prometheus-platform']['package_retries']
@@ -135,7 +135,7 @@ action :create do # rubocop:disable Metrics/BlockLength
         static false
         content unit
         triggers_reload true
-        action [:create, :enable, :start]
+        action %i[create enable start]
         subscribes :restart, 'execute[build exporter]' if exporters_auto_update
       end
     end
