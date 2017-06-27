@@ -38,10 +38,10 @@ unless targets_config.nil? || targets_config.empty?
     next unless target['name'] == node['fqdn']
     # Java is needed by jmx_exporter
     java_package = jmx_exporter['java'][node['platform']]
+    package_retries = node[cookbook_name]['package_retries']
     package java_package do
-      unless java_package.to_s.empty?
-        retries node[cookbook_name]['package_retries']
-      end
+      retries package_retries unless package_retries.nil?
+      not_if java_package.to_s.empty?
     end
 
     directory "directory for #{target['name']}" do

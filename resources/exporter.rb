@@ -59,10 +59,11 @@ action :create do # rubocop:disable Metrics/BlockLength
 
       # Install dependencies
       if go_compile
+        package_retries = node['prometheus-platform']['package_retries']
         %w[make golang-bin glibc-static].each do |pkg|
           package "install #{pkg} for #{name} exporter" do
             package_name pkg
-            retries node['prometheus-platform']['package_retries']
+            retries package_retries unless package_retries.nil?
           end
         end
       end

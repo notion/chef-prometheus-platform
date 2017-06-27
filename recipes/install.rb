@@ -15,8 +15,9 @@
 #
 
 # tar may not be installed by default
+package_retries = node[cookbook_name]['package_retries']
 package 'tar' do
-  retries node[cookbook_name]['package_retries']
+  retries package_retries unless package_retries.nil?
 end
 
 # Create prefix directories
