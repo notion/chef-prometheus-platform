@@ -31,6 +31,7 @@ driver:
   skip_preparation: true
   require_chef_omnibus: false
   security_opt: seccomp=unconfined
+  build_pull: true
 
 transport:
   name: docker_cli
