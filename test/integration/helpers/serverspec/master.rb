@@ -30,7 +30,6 @@ describe 'Prometheus' do
   end
 
   describe file('/opt/prometheus/prometheus.yml') do
-    its(:content) { should contain '# Produced by Chef' }
     its(:content) { should contain 'job_name: node' }
     its(:content) { should contain 'prometheus-platform-kitchen-2' }
   end

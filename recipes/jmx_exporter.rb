@@ -64,9 +64,8 @@ unless targets_config.nil? || targets_config.empty?
     # Generate config for prometheus jmx exporter
     java_opts = jmx_exporter['java_opts']
 
-    template "#{jmx_exporter_path}/#{target['name']}-#{target['app']}.yml" do
-      source 'config.yml.erb'
-      variables config: target['options']
+    file "#{jmx_exporter_path}/#{target['name']}-#{target['app']}.yml" do
+      content target['options'].to_h.to_yaml
       user node[cookbook_name]['user']
       group node[cookbook_name]['group']
       mode '0600'

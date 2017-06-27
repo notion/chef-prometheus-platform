@@ -30,7 +30,6 @@ describe 'Alert Manager' do
   end
 
   describe file('/opt/alertmanager/alertmanager.yml') do
-    its(:content) { should contain '# Produced by Chef' }
     its(:content) { should contain 'receiver: webhook' }
     its(:content) { should contain 'url: localhost:8888' }
   end

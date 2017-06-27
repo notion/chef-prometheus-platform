@@ -30,9 +30,8 @@ prometheus_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
 prometheus_config_filename = node[cookbook_name]['config_filename']
 prometheus_config = h_to_a(node.run_state[cookbook_name]['config'].to_hash)
 
-template "#{prometheus_home}/#{prometheus_config_filename}" do
-  source 'config.yml.erb'
-  variables config: prometheus_config
+file "#{prometheus_home}/#{prometheus_config_filename}" do
+  content prometheus_config.to_h.to_yaml
   user node[cookbook_name]['user']
   group node[cookbook_name]['group']
   mode '0600'
@@ -79,9 +78,8 @@ alertmgr_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
 alertmgr_conffile = node[cookbook_name]['alertmanager']['config_filename']
 alertmgr_config = h_to_a(node[cookbook_name]['alertmanager']['config'].to_hash)
 
-template "#{alertmgr_home}/#{alertmgr_conffile}" do
-  source 'config.yml.erb'
-  variables config: alertmgr_config
+file "#{alertmgr_home}/#{alertmgr_conffile}" do
+  content alertmgr_config.to_h.to_yaml
   user node[cookbook_name]['user']
   group node[cookbook_name]['group']
   mode '0600'
