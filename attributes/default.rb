@@ -23,10 +23,10 @@ cookbook_name = 'prometheus-platform'
 # (because of chef-solo for example).
 
 # Prometheus package and version
-default[cookbook_name]['version'] = '1.4.1'
+default[cookbook_name]['version'] = '1.7.1'
 prometheus_version = node[cookbook_name]['version']
 default[cookbook_name]['checksum'] =
-  '0511576f19ff060712d19fb343957113f6a47b2d2edcbe4889eaaa844b31f516'
+  '4779d5cf08c50ed368a57b102ab3895e5e830d6b355ca4bfecf718a034a164e0'
 # Where to get the tarball for Prometheus server
 default[cookbook_name]['server_mirror_base'] =
   'https://github.com/prometheus/prometheus/releases/download'
