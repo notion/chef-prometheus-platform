@@ -36,10 +36,10 @@ default[cookbook_name]['server_mirror'] =
   "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
 
 # Alert Manager version
-default[cookbook_name]['alertmanager']['version'] = '0.5.1'
+default[cookbook_name]['alertmanager']['version'] = '0.7.1'
 alertmgr_version = node[cookbook_name]['alertmanager']['version']
 default[cookbook_name]['alertmanager']['checksum'] =
-  '9df9f0eb0061c8ead1b89060b851ea389fbdf6c1adc8513b40f6f4b90f4de932'
+  'b1ee4985813094a94da26de5a96d955b3507741005ac2c72cbb1f8474e114731'
 # Where to get the tarball for Alert Manager
 default[cookbook_name]['alertmanager']['base_url'] =
   'https://github.com/prometheus/alertmanager/releases/download'
