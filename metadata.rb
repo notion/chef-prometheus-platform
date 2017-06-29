@@ -10,5 +10,7 @@ version '1.0.0'
 
 chef_version '>= 12.14'
 
+depends 'cluster-search'
 depends 'ark'
+
 supports 'centos', '>= 7.1'

@@ -36,26 +36,29 @@ end
   end
 end
 
-# Prometheus server
-ark 'prometheus' do
-  action :install
-  url node[cookbook_name]['server_mirror']
-  prefix_root node[cookbook_name]['prefix_root']
-  prefix_home node[cookbook_name]['prefix_home']
-  prefix_bin node[cookbook_name]['prefix_bin']
-  has_binaries []
-  checksum node[cookbook_name]['checksum']
-  version node[cookbook_name]['version']
-end
+node[cookbook_name]['components'].each_pair do |comp, config|
+  next unless config['install?']
+  # Download and install component
+  ark comp do
+    action :install
+    url config['url']
+    prefix_root node[cookbook_name]['prefix_root']
+    prefix_home node[cookbook_name]['prefix_home']
+    prefix_bin node[cookbook_name]['prefix_bin']
+    has_binaries []
+    checksum config['checksum']
+    version config['version']
+  end
 
-# Prometheus alertmanager
-ark 'alertmanager' do
-  action :install
-  url node[cookbook_name]['alertmanager']['download_url']
-  prefix_root node[cookbook_name]['prefix_root']
-  prefix_home node[cookbook_name]['prefix_home']
-  prefix_bin node[cookbook_name]['prefix_bin']
-  has_binaries []
-  checksum node[cookbook_name]['alertmanager']['checksum']
-  version node[cookbook_name]['alertmanager']['version']
+  # Extract all config with word 'path' in their key so we can create dirs
+  cli_opts = config['cli_opts'] || {}
+  paths = cli_opts.keys.keep_if { |k| k.match?(/^(.*\.)?path(\..*)?$/) }
+  paths.each do |path|
+    directory "#{cookbook_name}:#{path}:#{cli_opts[path]}" do
+      path cli_opts[path]
+      owner node[cookbook_name]['user']
+      group node[cookbook_name]['group']
+      recursive true
+    end
+  end
 end

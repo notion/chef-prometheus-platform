@@ -18,17 +18,17 @@ require 'master'
 require 'alertmanager'
 
 # Waiting for nodes to be up through Prometheus API
-(1..5).each do |try|
+(1..12).each do |try|
   curl = 'http_proxy="" curl -s'
   url = 'http://localhost:9090/api/v1/query?query=up'
   up_nodes = `#{curl} "#{url}"`
   break if
     up_nodes.include?(
-      'prometheus-platform-kitchen-1'
+      'prometheus-platform-server'
     ) && up_nodes.include?(
-      'prometheus-platform-kitchen-2'
+      'prometheus-platform-client'
     )
-  puts "Rest waiting to Prometheus Serveur to be ready… (##{try}/5)"
+  puts "Rest waiting to Prometheus Server to be ready… (##{try}/5)"
   sleep(5)
 end
 
@@ -38,7 +38,7 @@ describe 'With Prometheus API' do
 
   it 'We can get the list of up nodes' do
     up_nodes = `#{curl} "#{url}"`
-    expect(up_nodes).to include('prometheus-platform-kitchen-1')
-    expect(up_nodes).to include('prometheus-platform-kitchen-2')
+    expect(up_nodes).to include('prometheus-platform-server')
+    expect(up_nodes).to include('prometheus-platform-client')
   end
 end

@@ -14,10 +14,11 @@
 # limitations under the License.
 #
 
-def h_to_a(obj)
+# Convert hash entry when key is named 'index_.*' to an array item
+def h_to_a(obj) # rubocop:disable Metrics/AbcSize
   if obj.is_a?(Hash)
     obj =
-      if obj.keys.map { |k| !k.to_s.start_with?('index_') }.any?
+      if obj.keys.map { |k| !k.to_s.start_with?('index_') }.any? || obj.empty?
         obj.map { |k, v| [k, h_to_a(v)] }.to_h
       else
         obj.values
@@ -26,61 +27,48 @@ def h_to_a(obj)
   obj.is_a?(Array) ? obj.map { |v| h_to_a(v) } : obj
 end
 
-prometheus_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
-prometheus_config_filename = node[cookbook_name]['config_filename']
-prometheus_config = h_to_a(node.run_state[cookbook_name]['config'].to_hash)
-
-file "#{prometheus_home}/#{prometheus_config_filename}" do
-  content prometheus_config.to_h.to_yaml
-  user node[cookbook_name]['user']
-  group node[cookbook_name]['group']
-  mode '0600'
+# Simplified deep merge
+merge_proc = proc do |_, old, new|
+  if old.respond_to?(:merge)
+    old.merge(new, &merge_proc)
+  elsif old.is_a?(Array)
+    old + new
+  else
+    new
+  end
 end
 
+# Write configuration for all components from attributes
+node[cookbook_name]['components'].each_pair do |comp, config|
+  next unless config['install?']
+  configfile = "#{node[cookbook_name]['prefix_home']}/#{comp}/#{comp}.yml"
+  config = h_to_a((config['config'] || {}).to_hash)
+  override = node.run_state.dig(cookbook_name, 'components', comp) || {}
+  config = config.merge(override, &merge_proc)
+
+  file configfile do
+    content config.to_yaml
+    mode '0644'
+    not_if { config.empty? }
+  end
+end
+
+prometheus = node[cookbook_name]['components']['prometheus']
 # Set-up prometheus rules directory
-[
-  node[cookbook_name]['rules_dir'],
-  node[cookbook_name]['launch_config']['storage.local.path']
-].each do |dir|
-  directory dir do
-    owner node[cookbook_name]['user']
-    group node[cookbook_name]['group']
+if prometheus['install?']
+  prefix_dir = "#{node[cookbook_name]['prefix_home']}/prometheus"
+  rules_dir = node[cookbook_name]['components']['prometheus']['rules_dir']
+  directory "#{prefix_dir}/#{rules_dir}"
+
+  prometheus['rules'].each do |file, rules|
+    rules = rules.map { |r| r.is_a?(Array) ? r.join("\n") : r }.join("\n\n")
+
+    file "#{prefix_dir}/#{rules_dir}/#{file}" do
+      mode '0644'
+      content "#{rules}\n"
+      notifies(
+        :reload_or_try_restart, 'systemd_unit[prometheus.service]', :delayed
+      )
+    end
   end
-end
-
-# Deploy alerting and recording rules from data_bag
-data_bag = node[cookbook_name]['data_bag']
-unless data_bag['name'].nil?
-  content = data_bag_item(
-    data_bag['name'],
-    data_bag['item']
-  )[data_bag['key']]
-
-  rules_dir = node[cookbook_name]['rules_dir']
-  template "#{rules_dir}/#{data_bag['item']}.rules" do
-    source 'rules.erb'
-    user node[cookbook_name]['user']
-    group node[cookbook_name]['group']
-    mode '0600'
-    variables content: content
-    notifies :restart, 'systemd_unit[prometheus_server.service]', :delayed
-  end
-end
-
-# Generate alertmanager config
-alert = node[cookbook_name]['alertmanager']
-directory alert['launch_config']['storage.path'] do
-  owner node[cookbook_name]['user']
-  group node[cookbook_name]['group']
-end
-
-alertmgr_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
-alertmgr_conffile = node[cookbook_name]['alertmanager']['config_filename']
-alertmgr_config = h_to_a(node[cookbook_name]['alertmanager']['config'].to_hash)
-
-file "#{alertmgr_home}/#{alertmgr_conffile}" do
-  content alertmgr_config.to_h.to_yaml
-  user node[cookbook_name]['user']
-  group node[cookbook_name]['group']
-  mode '0600'
 end

@@ -18,11 +18,11 @@ require 'spec_helper'
 
 describe 'Alert Manager' do
   it 'is running' do
-    expect(service('prometheus_alertmanager')).to be_running
+    expect(service('alertmanager')).to be_running
   end
 
   it 'is launched at boot' do
-    expect(service('prometheus_alertmanager')).to be_enabled
+    expect(service('alertmanager')).to be_enabled
   end
 
   it 'is listening on correct port' do
@@ -30,12 +30,12 @@ describe 'Alert Manager' do
   end
 
   describe file('/opt/alertmanager/alertmanager.yml') do
-    its(:content) { should contain 'receiver: webhook' }
-    its(:content) { should contain 'url: localhost:8888' }
+    its(:content) { should contain 'receiver: default_email' }
+    its(:content) { should contain 'to: prometheus-platform@yopmail.com' }
   end
 
   it 'has started successfully' do
-    result = `journalctl -u prometheus_alertmanager -o cat`
+    result = `journalctl -u alertmanager -o cat`
     expect(result).to include('Listening on :9093')
   end
 end

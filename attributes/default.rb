@@ -16,63 +16,106 @@
 
 cookbook_name = 'prometheus-platform'
 
-# Cluster Search (cluster-search) is a simple cookbook library which simplify
-# the search of members of a cluster. It relies on Chef search with a size
-# guard (to avoid inconsistencies during initial convergence) and allows a
-# fall-back to hostname listing if user does not want to rely on searches
-# (because of chef-solo for example).
-
-# Prometheus package and version
-default[cookbook_name]['version'] = '1.7.1'
-prometheus_version = node[cookbook_name]['version']
-default[cookbook_name]['checksum'] =
-  '4779d5cf08c50ed368a57b102ab3895e5e830d6b355ca4bfecf718a034a164e0'
 # Where to get the tarball for Prometheus server
-default[cookbook_name]['server_mirror_base'] =
-  'https://github.com/prometheus/prometheus/releases/download'
-prometheus_mirror = node[cookbook_name]['server_mirror_base']
-server_package_name = "prometheus-#{prometheus_version}.linux-amd64.tar.gz"
-default[cookbook_name]['server_mirror'] =
-  "#{prometheus_mirror}/v#{prometheus_version}/#{server_package_name}"
+mirror = 'https://github.com/prometheus/' \
+  '%<comp>s/releases/download/v%<version>s'
+file = '%<comp>s-%<version>s.linux-amd64.tar.gz'
 
-# Alert Manager version
-default[cookbook_name]['alertmanager']['version'] = '0.7.1'
-alertmgr_version = node[cookbook_name]['alertmanager']['version']
-default[cookbook_name]['alertmanager']['checksum'] =
-  'b1ee4985813094a94da26de5a96d955b3507741005ac2c72cbb1f8474e114731'
-# Where to get the tarball for Alert Manager
-default[cookbook_name]['alertmanager']['base_url'] =
-  'https://github.com/prometheus/alertmanager/releases/download'
-alertmgr_base_url = node[cookbook_name]['alertmanager']['base_url']
-alertmgr_pkg = "alertmanager-#{alertmgr_version}.linux-amd64.tar.gz"
-default[cookbook_name]['alertmanager']['download_url'] =
-  "#{alertmgr_base_url}/v#{alertmgr_version}/#{alertmgr_pkg}"
+# Prometheus package and version from https://prometheus.io/download
+# Set install? to true to install a component
+# For each component, the url field will be added later in the file
+#   'url' => url of file, default: "#{mirror}/#{file}"
+default[cookbook_name]['components'] = {
+  'prometheus' => {
+    'install?' => false,
+    'version' => '1.7.1',
+    'sha' => '4779d5cf08c50ed368a57b102ab3895e5e830d6b355ca4bfecf718a034a164e0'
+  },
+  'alertmanager' => {
+    'install?' => false,
+    'version' => '0.8.0',
+    'sha' => 'b569ae0d31e5df59391124578bcf9b28316cf12adb4cc9d10f439fc3ab3422f1'
+  },
+  'blackbox_exporter' => {
+    'install?' => false,
+    'version' => '0.8.1',
+    'sha' => '322a780be00b5b6319aa24282466b564ee6cd984fdd9d640ad003b2c5469e93d'
+  },
+  'consul_exporter' => {
+    'install?' => false,
+    'version' => '0.3.0'
+  },
+  'graphite_exporter' => {
+    'install?' => false,
+    'version' => '0.2.0'
+  },
+  'haproxy_exporter' => {
+    'install?' => false,
+    'version' => '0.7.1'
+  },
+  'memcached_exporter' => {
+    'install?' => false,
+    'version' => '0.3.0'
+  },
+  'mysqld_exporter' => {
+    'install?' => false,
+    'version' => '0.10.0',
+    'sha' => '32797bc96aa00bb20e0b9165f6d3887fe9612b474061ee7de0189f5377b61859'
+  },
+  'node_exporter' => {
+    'install?' => false,
+    'version' => '0.14.0',
+    'sha' => 'd5980bf5d0dc7214741b65d3771f08e6f8311c86531ae21c6ffec1d643549b2e'
+  },
+  'pushgateway' => {
+    'install?' => false,
+    'version' => '0.4.0',
+    'sha' => 'e1ce58b3f2c44816e748278434d6fc91e530da77dcc34b1246e1a0f25314831f'
+  },
+  'statsd_exporter' => {
+    'install?' => false,
+    'version' => '0.4.0',
+    'sha' => '320da5b244af3f505cb28f130ea5f3137e24bb8af9c1ddfed797a89174065347'
+  }
+}
 
 # User and group of prometheus process
 default[cookbook_name]['user'] = 'prometheus'
 default[cookbook_name]['group'] = 'prometheus'
 
-# Where to put installation dir
-default[cookbook_name]['prefix_root'] = '/opt'
-# Where to link installation dir
-default[cookbook_name]['prefix_home'] = '/opt'
-# Where to link binaries
-default[cookbook_name]['prefix_bin'] = '/opt/bin'
+# Ark stuff (Installation), shared for all components
+default[cookbook_name]['prefix_root'] = '/opt' # base installation dir
+default[cookbook_name]['prefix_home'] = '/opt' # where is link to install dir
+default[cookbook_name]['prefix_bin'] = '/opt/bin' # where to link binaries
 
-# Prometheus default config filename to load (generated through template)
-default[cookbook_name]['config_filename'] = 'prometheus.yml'
-config_filename = node[cookbook_name]['config_filename']
+# Default unit file, can be modified/extended for each component
+default[cookbook_name]['default']['unit'] = {
+  'Unit' => {
+    'Description' => 'Prometheus platform: %<comp>s',
+    'After' => 'network.target'
+  },
+  'Service' => {
+    'Type' => 'simple',
+    'User' => node[cookbook_name]['user'],
+    'Group' => node[cookbook_name]['group'],
+    'WorkingDirectory' => '%<path>s',
+    'SyslogIdentifier' => '%<comp>s',
+    'Restart' => 'on-failure',
+    'ExecStart' => '%<cli>s'
+  },
+  'Install' => {
+    'WantedBy' => 'multi-user.target'
+  }
+}
 
-prometheus_path = "#{node[cookbook_name]['prefix_home']}/prometheus"
-# Path to prometheus binary
-default[cookbook_name]['bin'] = "#{prometheus_path}/prometheus"
+# Rules dir, will be created and populated by 'rules' attributes
+default[cookbook_name]['components']['prometheus']['rules_dir'] = 'rules'
 
-# Configure retries for the package resources, default = global default (0)
-# (mostly used for test purpose
-default[cookbook_name]['package_retries'] = nil
-
-# Prometheus config
-default[cookbook_name]['config'] = {
+# Prometheus main config
+default[cookbook_name]['components']['prometheus']['config'] = {
+  'rule_files' => [
+    "#{node[cookbook_name]['components']['prometheus']['rules_dir']}/*"
+  ],
   'global' => {
     'scrape_interval' => '15s',
     'evaluation_interval' => '15s',
@@ -94,58 +137,109 @@ default[cookbook_name]['config'] = {
   }
 }
 
-# Prometheus launch configuration, defined in systemd unit
-default[cookbook_name]['launch_config'] = {
-  'config.file' => "#{prometheus_path}/#{config_filename}",
-  'alertmanager.url' => 'http://localhost:9093', # if has_alertmanager
-  'storage.local.path' => "#{prometheus_path}/data",
+# Prometheus launch configuration, stored in systemd unit
+default[cookbook_name]['components']['prometheus']['cli_opts'] = {
+  'config.file' => '%<path>s/%<cfile>s',
+  'alertmanager.url' => "http://#{node['fqdn']}:9093", # if has_alertmanager
+  'storage.local.path' => '%<path>s/data',
   'storage.local.retention' => '21600h' # default 2 weeks
 }
 
-# Initialize run_state attribute
-node.run_state[cookbook_name] = {}
-node.run_state[cookbook_name]['config'] =
-  node[cookbook_name]['config'].to_hash
+# Extra configuration for systemd unit, will be merged with default
+default[cookbook_name]['components']['prometheus']['unit'] = {
+  'Service' => {
+    'LimitNOFILE' => 65_536
+  }
+}
 
-# Prometheus rules directory
-default[cookbook_name]['rules_dir'] = "#{prometheus_path}/rules"
+# Rules configuration for Prometheus, will be in rules_dir
+default[cookbook_name]['components']['prometheus']['rules'] = {
+  # file => array of rules where a rule is a string, or an array of string
+  # example:
+  #   'alerting' => [],
+  #   'recording' => []
+}
 
-# Alerting and recording rules loaded through a data_bag
-default[cookbook_name]['data_bag']['name'] = nil
-# Data bag item to load
-default[cookbook_name]['data_bag']['item'] = nil
-# Key used to load the value in data bag item containing the data
-default[cookbook_name]['data_bag']['key'] = nil
+# Alertmanager configuration, you should probably override the values
+default[cookbook_name]['components']['alertmanager']['config'] = {
+  'global' => {
+    'smtp_smarthost' => 'smtp.yopmail.com:25',
+    'smtp_from' => "#{cookbook_name}@yopmail.com"
+  },
+  'route' => {
+    'receiver' => 'default_email',
+    'group_wait' => '30s',
+    'group_interval' => '5m',
+    'repeat_interval' => '4h'
+  },
+  'receivers' => {
+    'index_default' =>
+    {
+      'name' => 'default_email',
+      'email_configs' => {
+        'index_1' => {
+          'to' => "#{cookbook_name}@yopmail.com"
+        }
+      }
+    }
+  }
+}
+
+# Alertmanager launch configuration, stored in systemd unit
+default[cookbook_name]['components']['alertmanager']['cli_opts'] = {
+  'config.file' => '%<path>s/%<cfile>s',
+  'storage.path' => '%<path>s/data'
+}
+
+# Simple proc to do a deep merge on hash
+deep_merge = proc do |_, old, new|
+  old.respond_to?(:merge) ? old.merge(new, &deep_merge) : new
+end
+
+# Merge global default with each component default
+node[cookbook_name]['components'].each_pair do |comp, config|
+  default[cookbook_name]['components'][comp]['url'] = "#{mirror}/#{file}"
+
+  default_unit = node[cookbook_name]['default']['unit'].to_h
+  current_unit = config['unit'] || {}
+  default[cookbook_name]['components'][comp]['unit'] =
+    default_unit.merge(current_unit, &deep_merge)
+end
+
+def interpol(conf, keys)
+  if conf.is_a?(String)
+    conf % keys
+  elsif conf.is_a?(Hash)
+    conf.map { |k, v| [k, interpol(v, keys)] }.to_h
+  else conf
+  end
+end
+
+# Fill in previous configurations, replace %<token>s with actual value
+node[cookbook_name]['components'].each_pair do |comp, config|
+  path = "#{node[cookbook_name]['prefix_home']}/#{comp}"
+  cfile = "#{comp}.yml"
+  bin = "#{path}/#{comp}"
+
+  keys = {
+    path: path,
+    cfile: cfile,
+    bin: bin,
+    comp: comp,
+    version: config['version']
+  }
+
+  # cli need substitution too
+  cli = [
+    bin, (config['cli_opts'] || {}).map { |k, v| "#{' ' * 2}-#{k}=#{v}" }
+  ].flatten.join(" \\\n") % keys
+  keys[:cli] = cli
+  default[cookbook_name]['components'][comp] = interpol(config.to_h, keys)
+end
 
 # Should we restart service after config update?
 default[cookbook_name]['auto_restart'] = true
 
-# Alertmanager config
-alertmgr_path = "#{node[cookbook_name]['prefix_home']}/alertmanager"
-
-# Prometheus alertmanager config filename to load (generated through template)
-default[cookbook_name]['alertmanager']['config_filename'] =
-  'alertmanager.yml'
-alert_conf = node[cookbook_name]['alertmanager']['config_filename']
-
-# Alertmanager will not be started if his config is empty
-default[cookbook_name]['alertmanager']['config'] = {
-  # 'route' => {
-  #   'receiver' => 'webhook',
-  #   'group_wait' => '30s',
-  #   'group_interval' => '5m',
-  #   'repeat_interval' => '4h'
-  # },
-  #   'receivers' => [{
-  #   'name' => 'webhook',
-  #   'webhook_configs' => [{
-  #     'url' => 'localhost:8888'
-  #   }]
-  # }]
-}
-
-# Alertmanager launch configuration, defined in systemd unit
-default[cookbook_name]['alertmanager']['launch_config'] = {
-  'config.file' => "#{alertmgr_path}/#{alert_conf}",
-  'storage.path' => "#{alertmgr_path}/data"
-}
+# Configure retries for the package resources, default = global default (0)
+# (mostly used for test purpose
+default[cookbook_name]['package_retries'] = nil

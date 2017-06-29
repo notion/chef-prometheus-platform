@@ -18,11 +18,11 @@ require 'spec_helper'
 
 describe 'Prometheus node exporter' do
   it 'is running' do
-    expect(service('prometheus_node')).to be_running
+    expect(service('node_exporter')).to be_running
   end
 
   it 'is launched at boot' do
-    expect(service('prometheus_node')).to be_enabled
+    expect(service('node_exporter')).to be_enabled
   end
 
   it 'is listening on correct port' do
@@ -30,7 +30,7 @@ describe 'Prometheus node exporter' do
   end
 
   it 'has started successfully' do
-    result = `journalctl -u prometheus_node -o cat`
+    result = `journalctl -u node_exporter -o cat`
     expect(result).to include('Listening on :9100')
   end
 end

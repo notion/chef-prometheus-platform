@@ -1,0 +1,10 @@
+{
+  "id": "prometheus-platform-client-centos-7",
+  "run_list": [ "role[prometheus-platform]" ],
+  "automatic": {
+    "fqdn": "prometheus-platform-client-centos-7",
+    "roles":[
+      "prometheus-platform"
+    ]
+  }
+}

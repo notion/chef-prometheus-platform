@@ -27,6 +27,8 @@ driver:
   image: sbernard/centos-systemd-kitchen
   volume: /sys/fs/cgroup:/sys/fs/cgroup:ro
   command: /usr/lib/systemd/systemd
+  instance_host_name: true
+  instance_container_name: true
   network: kitchen
   skip_preparation: true
   require_chef_omnibus: false
@@ -45,33 +47,16 @@ platforms:
 
 suites:
 # Generate different types of nodes
-<% { 'prometheus-platform' => 2 }.each do |name,n| %>
-  <% ("1".."#{n}").each do |i| %>
-  - name: <%= name %>-<%= i %>
-    driver:
-      hostname: <%= name %>-kitchen-<%= i %>.kitchen
-      container_name: <%= name %>-kitchen-<%= i %>
+  - name: prometheus-platform-server
     run_list:
-      - recipe[prometheus-platform]
+      - role[prometheus-platform-server]
     attributes:
       prometheus-platform:
         package_retries: 1
-        master_host: prometheus-platform-kitchen-1.kitchen
-        alertmanager:
-          config:
-            route:
-              receiver: webhook
-              group_wait: 30s
-              group_interval: 5m
-              repeat_interval: 4h
-            receivers:
-              - name: webhook
-                webhook_configs:
-                  - url: localhost:8888
-        exporter:
-          node:
-            targets:
-              - prometheus-platform-kitchen-1.kitchen
-              - prometheus-platform-kitchen-2.kitchen
-  <% end %>
-<% end %>
+
+  - name: prometheus-platform-client
+    run_list:
+      - role[prometheus-platform]
+    attributes:
+      prometheus-platform:
+        package_retries: 1

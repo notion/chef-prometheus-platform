@@ -1,0 +1,50 @@
+{
+  "name": "prometheus-platform-server",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "prometheus-platform": {
+      "components": {
+        "prometheus": {
+          "install?": true,
+          "scrapers": {
+            "node_exporter": {
+              "scrape_interval": "60s",
+              "static_configs": {
+                "role": "prometheus-platform",
+                "port": "9100"
+              }
+            }
+          },
+          "rules": {
+            "alerting": [
+              [
+                "ALERT Instance_Down",
+                "  IF up{job='node'} == 0",
+                "  FOR 5m",
+                "  ANNOTATIONS {",
+                "    summary = 'Instance {{ $labels.instance }} is down',",
+                "    description = 'instance is down'",
+                "  }"
+              ]
+            ]
+          }
+        },
+        "alertmanager": {
+          "install?": true
+        },
+        "pushgateway": {
+          "install?": true
+        }
+      }
+    }
+  },
+  "override_attributes": {
+  },
+  "chef_type": "role",
+  "run_list": [
+    "role[prometheus-platform]"
+  ],
+  "env_run_lists": {
+
+  }
+}

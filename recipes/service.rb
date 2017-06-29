@@ -16,38 +16,13 @@
 
 auto_restart = node[cookbook_name]['auto_restart']
 
-# Prometheus Service
-p_home = "#{node[cookbook_name]['prefix_home']}/prometheus"
-p_conffile = node[cookbook_name]['config_filename']
+node[cookbook_name]['components'].each_pair do |comp, config|
+  next unless config['install?']
+  configfile = "#{node[cookbook_name]['prefix_home']}/#{comp}/#{comp}.yml"
 
-systemd_unit 'prometheus_server.service' do
-  enabled true
-  active true
-  masked false
-  static false
-  content node[cookbook_name]['prometheus_server']['unit']
-  triggers_reload true
-  action %i[create enable start]
-  subscribes :restart, "template[#{p_home}/#{p_conffile}]" if auto_restart
-end
-
-# Alertmanager Service (only if config is non-empty)
-alert_action = %i[create enable start]
-if node[cookbook_name]['alertmanager']['config'].empty?
-  alert_action = %i[create disable stop]
-  auto_restart = false
-end
-
-am_home = "#{node[cookbook_name]['prefix_home']}/alertmanager"
-am_conffile = node[cookbook_name]['alertmanager']['config_filename']
-
-systemd_unit 'prometheus_alertmanager.service' do
-  enabled true
-  active true
-  masked false
-  static false
-  content node[cookbook_name]['prometheus_alertmanager']['unit']
-  triggers_reload true
-  action alert_action
-  subscribes :restart, "template[#{am_home}/#{am_conffile}]" if auto_restart
+  systemd_unit "#{comp}.service" do
+    content config['unit']
+    action %i[create enable start]
+    subscribes :reload_or_try_restart, "file[#{configfile}]" if auto_restart
+  end
 end

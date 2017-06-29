@@ -1,0 +1,28 @@
+{
+  "name": "prometheus-platform",
+  "json_class": "Chef::Role",
+  "default_attributes": {
+    "prometheus-platform": {
+      "components": {
+        "node_exporter": {
+          "install?": true
+        },
+        "statsd_exporter": {
+          "install?": true
+        },
+        "pushgateway": {
+          "install?": true
+        }
+      }
+    }
+  },
+  "override_attributes": {
+  },
+  "chef_type": "role",
+  "run_list": [
+    "recipe[prometheus-platform]"
+  ],
+  "env_run_lists": {
+
+  }
+}

@@ -18,11 +18,11 @@ require 'spec_helper'
 
 describe 'Prometheus' do
   it 'is running' do
-    expect(service('prometheus_server')).to be_running
+    expect(service('prometheus')).to be_running
   end
 
   it 'is launched at boot' do
-    expect(service('prometheus_server')).to be_enabled
+    expect(service('prometheus')).to be_enabled
   end
 
   it 'is listening on correct port' do
@@ -30,12 +30,14 @@ describe 'Prometheus' do
   end
 
   describe file('/opt/prometheus/prometheus.yml') do
-    its(:content) { should contain 'job_name: node' }
-    its(:content) { should contain 'prometheus-platform-kitchen-2' }
+    its(:content) { should contain 'job_name: prometheus' }
+    its(:content) { should contain 'job_name: node_exporter' }
+    its(:content) { should contain 'prometheus-platform-server-centos-7:9100' }
+    its(:content) { should contain 'prometheus-platform-client-centos-7:9100' }
   end
 
   it 'has started successfully' do
-    result = `journalctl -u prometheus_server -o cat`
+    result = `journalctl -u prometheus -o cat`
     expect(result).to include('0 series loaded')
     expect(result).to include('Listening on :9090')
   end
