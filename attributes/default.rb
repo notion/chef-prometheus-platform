@@ -149,10 +149,3 @@ default[cookbook_name]['alertmanager']['launch_config'] = {
   'config.file' => "#{alertmgr_path}/#{alert_conf}",
   'storage.path' => "#{alertmgr_path}/data"
 }
-
-# Blacklisted exporters (that should be installed used their own recipe,
-# not using the provider)
-default[cookbook_name]['blacklisted_exporters'] = %w[jmx node]
-
-# Auto update for exporters
-default[cookbook_name]['exporters_auto_update'] = false

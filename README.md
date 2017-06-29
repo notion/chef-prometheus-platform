@@ -4,10 +4,13 @@ Prometheus Platform
 Description
 -----------
 
-Open-source systems monitoring and alerting toolkit originally
+Prometheus is an Open-source systems monitoring and alerting toolkit originally
 built at SoundCloud.
 
-This cookbook is designed to install and configure Prometheus.
+This cookbook is designed to install and configure Prometheus with its
+Alertmanager and Node exporter. Actually, all exporters following the format
+of Node exporter should be supported. Others are out of the scope of this
+cookbook.
 
 Requirements
 ------------
@@ -18,16 +21,20 @@ Declared in [metadata.rb](metadata.rb) and in [Gemfile](Gemfile).
 
 ### Platforms
 
-Should works on every Linux distro managed by systemd.
-Tested on CentOS 7.
+Should works on every Linux distro managed by systemd, possibly with minor
+adjustments. Tested on CentOS 7.
 
 Usage
 -----
 
 ### Test
 
-This cookbook is fully tested through the installation of 2 nodes
-in docker hosts. This uses kitchen, docker and some monkey-patching.
+This cookbook is tested through the installation of 2 nodes in docker hosts:
+
+- a master with Prometheus server, Alertmanager and Node exporter
+- a worker with just Node exporter
+
+This uses kitchen, docker and some monkey-patching.
 
 For more information, see *.kitchen.yml* and *test* directory.
 
@@ -38,8 +45,6 @@ Configuration is done by overriding default attributes. All configuration keys
 have a default defined in:
 
 [attributes/default.rb](attributes/default.rb).
-[attributes/grafana.rb](attributes/grafana.rb).
-[attributes/jmx\_exporter.rb](attributes/jmx_exporter.rb).
 [attributes/node\_exporter.rb](attributes/node_exporter.rb).
 [attributes/systemd.rb](attributes/systemd.rb).
 
@@ -51,8 +56,15 @@ Recipes
 
 ### default
 
-Include `user`, `install`, `node_exporter` , `jmx_exporter`, `exporters`,
-`grafana`, `config` and `service` recipes.
+Include `user` and `server` if `master_host == node['fqdn']`.
+
+### client
+
+Include `user` and `node_exporter` recipes.
+
+### server
+
+Include `user`, `install`, `node_exporter`, `config` and `service` recipes.
 
 ### user
 
@@ -60,104 +72,41 @@ Create user/group used by Prometheus
 
 ### install
 
-Install Prometheus server and alertmanager.
+Install Prometheus server and Alertmanager.
 
 Prometheus server will be installed on the host defined in the following
 attribute:
 
 `node['prometheus-platform']['master_host']`
 
-Alertmanager will be installed on the same host of the prometheus server if
+Alertmanager will be installed on the same host of the Prometheus server if
 the following attribute is set to true value:
 
 `node['prometheus-platform']['has_alertmanager']`
 
 ### node\_exporter
 
-Install and start prometheus node\_exporter on node if node has been
-defined as a target in prometheus server (see .kitchen.yml for example).
+Install and start Prometheus Node exporter on node if node has been
+defined as a target in Prometheus server (see .kitchen.yml for example).
 
 This recipe also generate node exporter related config to deploy on
-prometheus server.
-
-### jmx\_exporter
-
-Install and start prometheus jmx\_exporter on node if node has been defined
-as a jmx target in prometheus server (see .kitchen.yml for example).
-
-This recipe also generate jmx exporter related config to deploy on
-prometheus server.
-
-### exporters
-
-Install and configure a community prometheus exporter
-
-#### Example
-
-Define targets (nodes) where the zookeeper exporter will be deployed:
-
-```json
-"prometheus-platform": {
-  "exporter": {
-    "zookeper": {
-      "targets": [
-        "prometheus-platform-kitchen-2.kitchen:9114"
-      ]
-    }
-  }
-}
-```
-
-Get and compile the zookeeper exporter:
-
-```json
-"prometheus-platform": {
-  "exporter": {
-      "zookeeper": {
-        "config": {
-          "git_branch": "master",
-          "git_repo": "https://github.com/dln/zookeeper_exporter.git",
-          "path": "/opt/zookeeper_exporter",
-          "execstart_options": "-web.listen-address=:9114 localhost:2181"
-        }
-      }
-    }
-  }
-}
-```
-
-### grafana
-
-Install and start grafana on the host defined in the following attribute:
-
-`node['prometheus-platform']['grafana_host']`
+Prometheus server.
 
 ### config
 
-Generate and deploy global config and alertmanager config for prometheus
+Generate and deploy global config and Alertmanager config for prometheus
 server.
 
-Alerting and recording rules are deployed through a data_bag.
+Alerting and recording rules are deployed through a data\_bag.
 
 ### service
 
-Deploy systemd units for prometheus\_server and alertmanager.
+Deploy systemd units for Prometheus server and Alertmanager.
 
 Resources/Providers
 -------------------
 
-### Exporter
-
-#### Get source for the statsd exporter, compile it and start it using systemd
-
-```ruby
-prometheus_platform_exporter 'statsd' do
-  git_branch 'master'
-  git_repo 'https://github.com/prometheus/statsd_exporter.git'
-  path '/opt/statsd_exporter'
-  execstart_options '-web.listen-address=:9102 -statsd.listen-address=:9125'
-end
-```
+None.
 
 Changelog
 ---------

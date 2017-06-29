@@ -15,7 +15,3 @@
 #
 
 require 'node'
-require 'jmx_exporter'
-require 'aerospike_exporter'
-require 'zookeeper_exporter'
-require 'statsd_exporter'
