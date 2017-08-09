@@ -28,7 +28,7 @@ module Kitchen
       def run_action(action, instances, *args)
         # Extract helper instance(s) to be able to launch it first
         # so it is ready for other containers
-        helpers = instances[0..0]
+        helpers = []
         services = instances - helpers
 
         if %i[destroy test create converge].include? action

@@ -13,6 +13,21 @@
                 "role": "prometheus-platform",
                 "port": "9100"
               }
+            },
+            "statsd_exporter": {
+              "scrape_interval": "60s",
+              "static_configs": {
+                "role": "prometheus-platform",
+                "port": "9102"
+              }
+            },
+            "pushgateway": {
+              "scrape_interval": "60s",
+              "honor_labels": true,
+              "static_configs": {
+                "role": "prometheus-platform-server",
+                "port": "9091"
+              }
             }
           },
           "rules": {

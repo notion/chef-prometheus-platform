@@ -34,3 +34,22 @@ describe 'Prometheus node exporter' do
     expect(result).to include('Listening on :9100')
   end
 end
+
+describe 'Statsd exporter' do
+  it 'is running' do
+    expect(service('statsd_exporter')).to be_running
+  end
+
+  it 'is launched at boot' do
+    expect(service('statsd_exporter')).to be_enabled
+  end
+
+  it 'is listening on correct port' do
+    expect(port(9102)).to be_listening
+  end
+
+  it 'has started successfully' do
+    result = `journalctl -u statsd_exporter -o cat`
+    expect(result).to include('Accepting Prometheus Requests on :9102')
+  end
+end
