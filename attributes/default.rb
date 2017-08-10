@@ -123,8 +123,8 @@ default[cookbook_name]['components']['prometheus']['config'] = {
       'monitor' => 'codelab-monitor'
     }
   },
-  'scrape_configs' => {
-    'index_1' => # will be converted to array, allow overriding
+  'scrape_configs' => { # will be converted to array (see below)
+    'index_1' =>
     {
       'job_name' => 'prometheus',
       'scrape_interval' => '5s',
@@ -135,6 +135,35 @@ default[cookbook_name]['components']['prometheus']['config'] = {
       }
     }
   }
+  # this scrape_configs entry is equivalent and will be rewritten to:
+  # 'scrape_configs' => [
+  #   {
+  #     'job_name' => 'prometheus',
+  #     'scrape_interval' => '5s',
+  #     'static_configs' => {
+  #       'index_1' => {
+  #         'targets' => ['localhost:9090', 'localhost:9100']
+  #       }
+  #     }
+  #   }
+  # ]
+
+  # Actually, all hash containing a key 'index_xxxx' will be rewritten like
+  # that. This is to permit the overriding of default values in role attribute.
+}
+
+# Scrape_configs can be configured directly in config or in the following
+# attribute which will be interpreted by scraper recipe,
+# using cluster-search cookbook
+default[cookbook_name]['components']['prometheus']['scrapers'] = {
+  # Example:
+  # 'node_exporter' => {
+  #   'scrape_interval' => '60s',
+  #   'static_configs' => { # use cluster-search (search on a role)
+  #     'role' => 'prometheus-platform',
+  #     'port' => '9100'
+  #   }
+  # }
 }
 
 # Prometheus launch configuration, stored in systemd unit
@@ -172,7 +201,7 @@ default[cookbook_name]['components']['alertmanager']['config'] = {
     'group_interval' => '5m',
     'repeat_interval' => '4h'
   },
-  'receivers' => {
+  'receivers' => { # will be rewritten as an array, look at prometheus config
     'index_default' =>
     {
       'name' => 'default_email',
