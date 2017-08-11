@@ -1,5 +1,5 @@
 Prometheus Platform
-=============
+===================
 
 Description
 -----------
@@ -8,9 +8,8 @@ Prometheus is an Open-source systems monitoring and alerting toolkit originally
 built at SoundCloud.
 
 This cookbook is designed to install and configure Prometheus with its
-Alertmanager and Node exporter. Actually, all exporters following the format
-of Node exporter should be supported. Others are out of the scope of this
-cookbook.
+Alertmanager and all exporters listed on [https://prometheus.io/download]().
+Others, specific exporters are out of the scope of this cookbook.
 
 Requirements
 ------------
@@ -31,8 +30,9 @@ Usage
 
 This cookbook is tested through the installation of 2 nodes in docker hosts:
 
-- a master with Prometheus server, Alertmanager and Node exporter
-- a worker with just Node exporter
+- a master with Prometheus server, Alertmanager, Pushgateway, Node exporter and
+  Statsd exporter
+- a worker with Node exporter and Statsd exporter.
 
 This uses kitchen, docker and some monkey-patching.
 
@@ -45,26 +45,21 @@ Configuration is done by overriding default attributes. All configuration keys
 have a default defined in:
 
 [attributes/default.rb](attributes/default.rb).
-[attributes/node\_exporter.rb](attributes/node_exporter.rb).
-[attributes/systemd.rb](attributes/systemd.rb).
 
 Please read it to have a comprehensive view of what and how you can configure
 this cookbook behavior.
+
+You can also look at the role written for the tests to have an example on how
+to configure this cookbook:
+[server](test/integration/roles/prometheus-platform-server.json) and
+[node](test/integration/roles/prometheus-platform.json).
 
 Recipes
 -------
 
 ### default
 
-Include `user` and `server` if `master_host == node['fqdn']`.
-
-### client
-
-Include `user` and `node_exporter` recipes.
-
-### server
-
-Include `user`, `install`, `node_exporter`, `config` and `service` recipes.
+Include all others recipes.
 
 ### user
 
@@ -72,36 +67,22 @@ Create user/group used by Prometheus
 
 ### install
 
-Install Prometheus server and Alertmanager.
+Install all components with sub-attribute 'install?' as true.
 
-Prometheus server will be installed on the host defined in the following
-attribute:
+### scrapers
 
-`node['prometheus-platform']['master_host']`
-
-Alertmanager will be installed on the same host of the Prometheus server if
-the following attribute is set to true value:
-
-`node['prometheus-platform']['has_alertmanager']`
-
-### node\_exporter
-
-Install and start Prometheus Node exporter on node if node has been
-defined as a target in Prometheus server (see .kitchen.yml for example).
-
-This recipe also generate node exporter related config to deploy on
-Prometheus server.
+Prepare scrape\_configs configuration from scrapers attributes. Use
+cluster-search to create a dynamic "static\_configs".
 
 ### config
 
-Generate and deploy global config and Alertmanager config for prometheus
-server.
+Generate and deploy configuration for all components.
 
-Alerting and recording rules are deployed through a data\_bag.
+Also generate the alerting and recording rules for Prometheus.
 
 ### service
 
-Deploy systemd units for Prometheus server and Alertmanager.
+Deploy systemd units for all components.
 
 Resources/Providers
 -------------------
