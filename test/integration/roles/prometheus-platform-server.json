@@ -34,7 +34,7 @@
             "alerting": [
               [
                 "ALERT Instance_Down",
-                "  IF up{job='node'} == 0",
+                "  IF up{job='node_exporter'} == 0",
                 "  FOR 5m",
                 "  ANNOTATIONS {",
                 "    summary = 'Instance {{ $labels.instance }} is down',",
@@ -45,7 +45,27 @@
           }
         },
         "alertmanager": {
-          "install?": true
+          "install?": true,
+          "config": {
+            "global": {
+              "smtp_smarthost": "smtp.yopmail.com:25",
+              "smtp_from": "prometheus-platform@yopmail.com"
+            },
+            "route": {
+              "receiver": "default_email",
+              "group_wait": "30s",
+              "group_interval": "5m",
+              "repeat_interval": "4h"
+            },
+            "receivers": [
+              {
+                "name": "default_email",
+                "email_configs": [
+                  { "to": "prometheus-platform@yopmail.com" }
+                ]
+              }
+            ]
+          }
         },
         "pushgateway": {
           "install?": true

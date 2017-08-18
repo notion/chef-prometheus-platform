@@ -189,30 +189,8 @@ default[cookbook_name]['components']['prometheus']['rules'] = {
   #   'recording' => []
 }
 
-# Alertmanager configuration, you should probably override the values
-default[cookbook_name]['components']['alertmanager']['config'] = {
-  'global' => {
-    'smtp_smarthost' => 'smtp.yopmail.com:25',
-    'smtp_from' => "#{cookbook_name}@yopmail.com"
-  },
-  'route' => {
-    'receiver' => 'default_email',
-    'group_wait' => '30s',
-    'group_interval' => '5m',
-    'repeat_interval' => '4h'
-  },
-  'receivers' => { # will be rewritten as an array, look at prometheus config
-    'index_default' =>
-    {
-      'name' => 'default_email',
-      'email_configs' => {
-        'index_1' => {
-          'to' => "#{cookbook_name}@yopmail.com"
-        }
-      }
-    }
-  }
-}
+# Alertmanager configuration, empty by default which is non-working
+default[cookbook_name]['components']['alertmanager']['config'] = {}
 
 # Alertmanager launch configuration, stored in systemd unit
 default[cookbook_name]['components']['alertmanager']['cli_opts'] = {
