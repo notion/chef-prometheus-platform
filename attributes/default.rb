@@ -167,6 +167,7 @@ default[cookbook_name]['components']['prometheus']['scrapers'] = {
 }
 
 # Prometheus launch configuration, stored in systemd unit
+# Use '' if no value is needed
 default[cookbook_name]['components']['prometheus']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
   'alertmanager.url' => "http://#{node['fqdn']}:9093", # if has_alertmanager
@@ -193,6 +194,7 @@ default[cookbook_name]['components']['prometheus']['rules'] = {
 default[cookbook_name]['components']['alertmanager']['config'] = {}
 
 # Alertmanager launch configuration, stored in systemd unit
+# Use '' if no value is needed
 default[cookbook_name]['components']['alertmanager']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
   'storage.path' => '%<path>s/data'
@@ -222,6 +224,10 @@ def interpol(conf, keys)
   end
 end
 
+def opts_to_str(hash)
+  (hash || {}).map { |k, v| "#{' ' * 2}-#{k}#{"=#{v}" unless v.empty?}" }
+end
+
 # Fill in previous configurations, replace %<token>s with actual value
 node[cookbook_name]['components'].each_pair do |comp, config|
   path = "#{node[cookbook_name]['prefix_home']}/#{comp}"
@@ -237,9 +243,7 @@ node[cookbook_name]['components'].each_pair do |comp, config|
   }
 
   # cli need substitution too
-  cli = [
-    bin, (config['cli_opts'] || {}).map { |k, v| "#{' ' * 2}-#{k}=#{v}" }
-  ].flatten.join(" \\\n") % keys
+  cli = [bin, opts_to_str(config['cli_opts'])].flatten.join(" \\\n") % keys
   keys[:cli] = cli
   default[cookbook_name]['components'][comp] = interpol(config.to_h, keys)
 end

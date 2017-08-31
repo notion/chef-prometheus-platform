@@ -5,7 +5,12 @@
     "prometheus-platform": {
       "components": {
         "node_exporter": {
-          "install?": true
+          "install?": true,
+          "cli_opts": {
+            "collector.systemd.private": "",
+            "collector.textfile.directory":
+              "/opt/node_exporter/textfile_collector"
+          }
         },
         "statsd_exporter": {
           "install?": true

@@ -33,6 +33,12 @@ describe 'Prometheus node exporter' do
     result = `journalctl -u node_exporter -o cat`
     expect(result).to include('Listening on :9100')
   end
+
+  describe file('/etc/systemd/system/node_exporter.service') do
+    its(:content) { should contain '  -collector.systemd.private' }
+    s = '-collector.textfile.directory=/opt/node_exporter/textfile_collector'
+    its(:content) { should contain(s) }
+  end
 end
 
 describe 'Statsd exporter' do

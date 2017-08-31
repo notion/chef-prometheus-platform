@@ -24,5 +24,6 @@ node[cookbook_name]['components'].each_pair do |comp, config|
     content config['unit']
     action %i[create enable start]
     subscribes :reload_or_try_restart, "file[#{configfile}]" if auto_restart
+    subscribes :try_restart, "systemd_unit[#{comp}.service]" if auto_restart
   end
 end
