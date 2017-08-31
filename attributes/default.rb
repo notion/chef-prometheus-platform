@@ -51,7 +51,8 @@ default[cookbook_name]['components'] = {
   },
   'haproxy_exporter' => {
     'install?' => false,
-    'version' => '0.7.1'
+    'version' => '0.8.0',
+    'sha' => '2b1da4218fc5a1531ed17663ba5656c6bb5ce3db0ad6c2bdd6781d7f1b545816'
   },
   'memcached_exporter' => {
     'install?' => false,
