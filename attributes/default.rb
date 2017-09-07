@@ -154,8 +154,21 @@ default[cookbook_name]['components']['prometheus']['config'] = {
 }
 
 # Scrape_configs can be configured directly in config or in the following
-# attribute which will be interpreted by scraper recipe,
+# attributes which will be interpreted by scraper recipe,
 # using cluster-search cookbook
+
+# First default config that will be merged in all scrapers config
+default[cookbook_name]['components']['prometheus']['scrapers_default'] = {
+  # Example:
+  # 'relabel_configs' => [
+  #    'source_labels' => ['__address__'],
+  #    'regex' => '([^:]+):(.*)',
+  #    'replacement' => '$1',
+  #    'target_label' => 'instance'
+  #  ]
+}
+
+# Then scrapers list
 default[cookbook_name]['components']['prometheus']['scrapers'] = {
   # Example:
   # 'node_exporter' => {

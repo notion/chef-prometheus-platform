@@ -37,12 +37,25 @@ describe 'Prometheus' do
   end
 end
 
+def relabel(job_name)
+  <<-eos.gsub(/^  /, '')
+  - job_name: #{job_name}
+    relabel_configs:
+    - source_labels:
+      - __address__
+      regex: "([^:]+):(.*)"
+      replacement: "\\$1"
+      target_label: instance
+  eos
+end
+
 describe 'Prometheus Configuration' do
   describe file('/opt/prometheus/prometheus.yml') do
-    its(:content) { should contain 'job_name: prometheus' }
-    its(:content) { should contain 'job_name: node_exporter' }
-    its(:content) { should contain 'job_name: statsd_exporter' }
-    its(:content) { should contain 'job_name: pushgateway' }
+    %w[prometheus node_exporter statsd_exporter pushgateway].each do |job_name|
+      its(:content) { should contain "job_name: #{job_name}" }
+      next if job_name == 'prometheus'
+      its(:content) { should contain relabel(job_name) }
+    end
     its(:content) { should contain 'honor_labels: true' }
     its(:content) { should contain 'prometheus-platform-server-centos-7:9100' }
     its(:content) { should contain 'prometheus-platform-client-centos-7:9100' }

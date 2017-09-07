@@ -20,10 +20,12 @@
 # Use ClusterSearch
 ::Chef::Recipe.send(:include, ClusterSearch)
 
+sdefault = node[cookbook_name]['components']['prometheus']['scrapers_default']
 scrapers_config = node[cookbook_name]['components']['prometheus']['scrapers']
 
 scrape_configs = scrapers_config.to_h.map do |job_name, config|
   rewritten_config = { 'job_name' => job_name }
+  config = sdefault.to_h.merge(config)
   unless config['static_configs'].nil?
     port = config['static_configs']['port'] || 80
     scrapers = cluster_search(config['static_configs']) do |n|
