@@ -28,8 +28,8 @@ file = '%<comp>s-%<version>s.linux-amd64.tar.gz'
 default[cookbook_name]['components'] = {
   'prometheus' => {
     'install?' => false,
-    'version' => '1.7.1',
-    'sha' => '4779d5cf08c50ed368a57b102ab3895e5e830d6b355ca4bfecf718a034a164e0'
+    'version' => '1.7.2',
+    'sha' => 'a5d56b613b77e1d12e99ed5f77359d097c63cb6db64e8b04496eff186df11484'
   },
   'alertmanager' => {
     'install?' => false,
@@ -38,8 +38,8 @@ default[cookbook_name]['components'] = {
   },
   'blackbox_exporter' => {
     'install?' => false,
-    'version' => '0.8.1',
-    'sha' => '322a780be00b5b6319aa24282466b564ee6cd984fdd9d640ad003b2c5469e93d'
+    'version' => '0.9.1',
+    'sha' => 'f3bca7c0c0df0ad2e99d4a95e4d007b64483d44edf8a7b82bae992f54177b6e2'
   },
   'consul_exporter' => {
     'install?' => false,
