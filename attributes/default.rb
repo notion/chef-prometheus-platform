@@ -33,8 +33,8 @@ default[cookbook_name]['components'] = {
   },
   'alertmanager' => {
     'install?' => false,
-    'version' => '0.8.0',
-    'sha' => 'b569ae0d31e5df59391124578bcf9b28316cf12adb4cc9d10f439fc3ab3422f1'
+    'version' => '0.9.1',
+    'sha' => '407e0311689207b385fb1252f36d3c3119ae9a315e3eba205aaa69d576434ed7'
   },
   'blackbox_exporter' => {
     'install?' => false,
