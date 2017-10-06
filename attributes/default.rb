@@ -185,7 +185,7 @@ default[cookbook_name]['components']['prometheus']['scrapers'] = {
 default[cookbook_name]['components']['prometheus']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
   'alertmanager.url' => "http://#{node['fqdn']}:9093", # if has_alertmanager
-  'storage.local.path' => '%<path>s/data',
+  'storage.local.path' => '/var/opt/prometheus',
   'storage.local.retention' => '21600h' # default 2 weeks
 }
 
@@ -211,7 +211,7 @@ default[cookbook_name]['components']['alertmanager']['config'] = {}
 # Use '' if no value is needed
 default[cookbook_name]['components']['alertmanager']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
-  'storage.path' => '%<path>s/data'
+  'storage.path' => '/var/opt/alertmanager'
 }
 
 # Simple proc to do a deep merge on hash
