@@ -38,7 +38,7 @@ describe 'Prometheus' do
 end
 
 def relabel(job_name)
-  <<-eos.gsub(/^  /, '')
+  <<-YAML.gsub(/^  /, '')
   - job_name: #{job_name}
     relabel_configs:
     - source_labels:
@@ -46,7 +46,7 @@ def relabel(job_name)
       regex: "([^:]+):(.*)"
       replacement: "\\$1"
       target_label: instance
-  eos
+  YAML
 end
 
 describe 'Prometheus Configuration' do
