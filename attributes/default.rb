@@ -186,7 +186,7 @@ default[cookbook_name]['components']['prometheus']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
   'alertmanager.url' => "http://#{node['fqdn']}:9093", # if has_alertmanager
   'storage.local.path' => '/var/opt/prometheus',
-  'storage.local.retention' => '21600h' # default 2 weeks
+  'storage.local.retention' => '360h' # default 2 weeks
 }
 
 # Extra configuration for systemd unit, will be merged with default
