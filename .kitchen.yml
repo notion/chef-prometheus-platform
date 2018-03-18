@@ -31,7 +31,6 @@ driver:
   instance_container_name: true
   network: kitchen
   skip_preparation: true
-  require_chef_omnibus: false
   security_opt: seccomp=unconfined
   build_pull: true
 
@@ -41,6 +40,8 @@ transport:
 provisioner:
   name: chef_zero
   always_update_cookbooks: true
+  product_name: chef
+  install_strategy: skip
 
 platforms:
   - name: centos-7
