@@ -41,17 +41,20 @@
             }
           },
           "rules": {
-            "alerting": [
-              [
-                "ALERT Instance_Down",
-                "  IF up{job='node_exporter'} == 0",
-                "  FOR 5m",
-                "  ANNOTATIONS {",
-                "    summary = 'Instance {{ $labels.instance }} is down',",
-                "    description = 'instance is down'",
-                "  }"
-              ]
-            ]
+            "alerting": {
+              "groups" : [{
+                "name" : "alerting",
+                "rules" : [{
+                  "alert":"Instance_Down",
+                  "expr":"up{job=\"node_exporter\"} == 0",
+                  "for":"5m",
+                  "annotations": {
+                    "description":"instance is down",
+                    "summary":"Instance {{ $labels.instance }} is down"
+                  }
+                }]
+              }]
+            }
           }
         },
         "alertmanager": {

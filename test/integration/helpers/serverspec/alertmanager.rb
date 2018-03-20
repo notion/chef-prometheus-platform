@@ -36,6 +36,6 @@ describe 'Alert Manager' do
 
   it 'has started successfully' do
     result = `journalctl -u alertmanager -o cat`
-    expect(result).to include('Listening on :9093')
+    expect(result).to include('Listening address=:9093')
   end
 end

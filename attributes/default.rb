@@ -28,18 +28,18 @@ file = '%<comp>s-%<version>s.linux-amd64.tar.gz'
 default[cookbook_name]['components'] = {
   'prometheus' => {
     'install?' => false,
-    'version' => '1.7.2',
-    'sha' => 'a5d56b613b77e1d12e99ed5f77359d097c63cb6db64e8b04496eff186df11484'
+    'version' => '2.2.1',
+    'sha' => 'ec1798dbda1636f49d709c3931078dc17eafef76c480b67751aa09828396cf31'
   },
   'alertmanager' => {
     'install?' => false,
-    'version' => '0.9.1',
-    'sha' => '407e0311689207b385fb1252f36d3c3119ae9a315e3eba205aaa69d576434ed7'
+    'version' => '0.14.0',
+    'sha' => 'caddbbbe3ef8545c6cefb32f9a11207ae18dcc788e8d0fb19659d88c58d14b37'
   },
   'blackbox_exporter' => {
     'install?' => false,
-    'version' => '0.9.1',
-    'sha' => 'f3bca7c0c0df0ad2e99d4a95e4d007b64483d44edf8a7b82bae992f54177b6e2'
+    'version' => '0.12.0',
+    'sha' => 'c5d8ba7d91101524fa7c3f5e17256d467d44d5e1d243e251fd795e0ab4a83605'
   },
   'consul_exporter' => {
     'install?' => false,
@@ -51,12 +51,13 @@ default[cookbook_name]['components'] = {
   },
   'haproxy_exporter' => {
     'install?' => false,
-    'version' => '0.8.0',
-    'sha' => '2b1da4218fc5a1531ed17663ba5656c6bb5ce3db0ad6c2bdd6781d7f1b545816'
+    'version' => '0.9.0',
+    'sha' => 'b0d1caaaf245d3d16432de9504575b3af1fec14b2206a468372a80843be001a0'
   },
   'memcached_exporter' => {
     'install?' => false,
-    'version' => '0.3.0'
+    'version' => '0.4.1',
+    'sha' => 'f7f2511efab64de701e9303516ed1595e4e3ad4edea527338de64c8484aca7a6'
   },
   'mysqld_exporter' => {
     'install?' => false,
@@ -65,8 +66,8 @@ default[cookbook_name]['components'] = {
   },
   'node_exporter' => {
     'install?' => false,
-    'version' => '0.14.0',
-    'sha' => 'd5980bf5d0dc7214741b65d3771f08e6f8311c86531ae21c6ffec1d643549b2e'
+    'version' => '0.15.2',
+    'sha' => '1ce667467e442d1f7fbfa7de29a8ffc3a7a0c84d24d7c695cc88b29e0752df37'
   },
   'pushgateway' => {
     'install?' => false,
@@ -75,8 +76,8 @@ default[cookbook_name]['components'] = {
   },
   'statsd_exporter' => {
     'install?' => false,
-    'version' => '0.4.0',
-    'sha' => '320da5b244af3f505cb28f130ea5f3137e24bb8af9c1ddfed797a89174065347'
+    'version' => '0.6.0',
+    'sha' => '8ac4013400026ed143aaddc495d19a2d6290f45bc8fdc85ad9970d3e45adaeb2'
   }
 }
 
@@ -123,6 +124,13 @@ default[cookbook_name]['components']['prometheus']['config'] = {
     'external_labels' => {
       'monitor' => 'codelab-monitor'
     }
+  },
+  'alerting' => {
+    'alertmanagers' => [{
+      'static_configs' => [{
+        'targets' => ["#{node['fqdn']}:9093"]
+      }]
+    }]
   },
   'scrape_configs' => { # will be converted to array (see below)
     'index_1' =>
@@ -184,9 +192,8 @@ default[cookbook_name]['components']['prometheus']['scrapers'] = {
 # Use '' if no value is needed
 default[cookbook_name]['components']['prometheus']['cli_opts'] = {
   'config.file' => '%<path>s/%<cfile>s',
-  'alertmanager.url' => "http://#{node['fqdn']}:9093", # if has_alertmanager
-  'storage.local.path' => '/var/opt/prometheus',
-  'storage.local.retention' => '360h' # default 2 weeks
+  'storage.tsdb.path' => '/var/opt/prometheus',
+  'storage.tsdb.retention' => '15d'
 }
 
 # Extra configuration for systemd unit, will be merged with default
@@ -239,7 +246,7 @@ def interpol(conf, keys)
 end
 
 def opts_to_str(hash)
-  (hash || {}).map { |k, v| "#{' ' * 2}-#{k}#{"=#{v}" unless v.empty?}" }
+  (hash || {}).map { |k, v| "#{' ' * 2}--#{k}#{"=#{v}" unless v.empty?}" }
 end
 
 # Fill in previous configurations, replace %<token>s with actual value

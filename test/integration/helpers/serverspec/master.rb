@@ -32,8 +32,8 @@ describe 'Prometheus' do
 
   it 'has started successfully' do
     result = `journalctl -u prometheus -o cat`
-    expect(result).to include('0 series loaded')
-    expect(result).to include('Listening on :9090')
+    expect(result).to include('TSDB started')
+    expect(result).to include('Server is ready to receive web requests.')
   end
 end
 

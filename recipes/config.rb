@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'yaml'
+
 # Convert hash entry when key is named 'index_.*' to an array item
 def h_to_a(obj) # rubocop:disable Metrics/AbcSize
   if obj.is_a?(Hash)
@@ -61,11 +63,9 @@ if prometheus['install?']
   directory "#{prefix_dir}/#{rules_dir}"
 
   prometheus['rules'].each do |file, rules|
-    rules = rules.map { |r| r.is_a?(Array) ? r.join("\n") : r }.join("\n\n")
-
     file "#{prefix_dir}/#{rules_dir}/#{file}" do
       mode '0644'
-      content "#{rules}\n"
+      content "#{rules.to_h.to_yaml}\n"
       notifies(
         :reload_or_try_restart, 'systemd_unit[prometheus.service]', :delayed
       )
