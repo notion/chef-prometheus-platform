@@ -91,7 +91,7 @@ def waiting_up
     healths = (targets.dig('data', 'activeTargets') || []).map do |active|
       active['health'] != 'up'
     end
-    break unless healths.any?
+    break unless healths.any? || healths.empty?
     puts "Waiting for all targets to be \"up\": #{i * 2}/120s"
     sleep(2)
   end
