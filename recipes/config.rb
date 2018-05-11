@@ -40,13 +40,18 @@ merge_proc = proc do |_, old, new|
   end
 end
 
+def attributes_to_yaml(obj)
+  hash = obj.to_hash
+  JSON.parse(hash.dup.to_json)
+end
+
 # Write configuration for all components from attributes
 node[cookbook_name]['components'].each_pair do |comp, config|
   next unless config['install?']
   configfile = "#{node[cookbook_name]['prefix_home']}/#{comp}/#{comp}.yml"
-  config = h_to_a((config['config'] || {}).to_hash)
+  config = attributes_to_yaml(h_to_a((config['config'] || {})))
   override = node.run_state.dig(cookbook_name, 'components', comp) || {}
-  config = config.merge(override, &merge_proc)
+  config = attributes_to_yaml(config.merge(override, &merge_proc))
 
   file configfile do
     content config.to_yaml
@@ -63,6 +68,8 @@ if prometheus['install?']
   directory "#{prefix_dir}/#{rules_dir}"
 
   prometheus['rules'].each do |file, rules|
+    rules = attributes_to_yaml(rules)
+
     file "#{prefix_dir}/#{rules_dir}/#{file}" do
       mode '0644'
       content "#{rules.to_h.to_yaml}\n"
