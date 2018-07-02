@@ -28,13 +28,13 @@ file = '%<comp>s-%<version>s.linux-amd64.tar.gz'
 default[cookbook_name]['components'] = {
   'prometheus' => {
     'install?' => false,
-    'version' => '2.2.1',
-    'sha' => 'ec1798dbda1636f49d709c3931078dc17eafef76c480b67751aa09828396cf31'
+    'version' => '2.3.1',
+    'sha' => 'adb76021fcff8a2a8363de8739fcb7ff5647c2a0ff90b2c02dcb56cf0cd836f0'
   },
   'alertmanager' => {
     'install?' => false,
-    'version' => '0.14.0',
-    'sha' => 'caddbbbe3ef8545c6cefb32f9a11207ae18dcc788e8d0fb19659d88c58d14b37'
+    'version' => '0.15.0',
+    'sha' => '36b77f6777fd2c455694441a332897df78639f5a259ce137f40d9be038aa9e1a'
   },
   'blackbox_exporter' => {
     'install?' => false,
@@ -61,18 +61,18 @@ default[cookbook_name]['components'] = {
   },
   'mysqld_exporter' => {
     'install?' => false,
-    'version' => '0.10.0',
-    'sha' => '32797bc96aa00bb20e0b9165f6d3887fe9612b474061ee7de0189f5377b61859'
+    'version' => '0.11.0',
+    'sha' => 'b53ad48ff14aa891eb6a959730ffc626db98160d140d9a66377394714c563acf'
   },
   'node_exporter' => {
     'install?' => false,
-    'version' => '0.15.2',
-    'sha' => '1ce667467e442d1f7fbfa7de29a8ffc3a7a0c84d24d7c695cc88b29e0752df37'
+    'version' => '0.16.0',
+    'sha' => 'e92a601a5ef4f77cce967266b488a978711dabc527a720bea26505cba426c029'
   },
   'pushgateway' => {
     'install?' => false,
-    'version' => '0.4.0',
-    'sha' => 'e1ce58b3f2c44816e748278434d6fc91e530da77dcc34b1246e1a0f25314831f'
+    'version' => '0.5.2',
+    'sha' => 'd4aeb15b9667bae79170d4f12b4afa20dc29850aeac2ce071479d93057fb5c3b'
   },
   'statsd_exporter' => {
     'install?' => false,
