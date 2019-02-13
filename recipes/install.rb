@@ -46,7 +46,7 @@ node[cookbook_name]['components'].each_pair do |comp, config|
     prefix_home node[cookbook_name]['prefix_home']
     prefix_bin node[cookbook_name]['prefix_bin']
     has_binaries []
-    checksum config['checksum']
+    checksum config['sha']
     version config['version']
   end
 
